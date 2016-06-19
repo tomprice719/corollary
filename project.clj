@@ -9,7 +9,8 @@
                  [environ "1.0.0"]
                  [selmer "1.0.4"]
                  [org.clojure/java.jdbc "0.6.1"]
-                 [postgresql "9.3-1102.jdbc41"]]
+                 [postgresql "9.3-1102.jdbc41"]
+                 [migratus "0.8.25"]]
   :min-lein-version "2.0.0"
   :plugins [[environ/environ.lein "0.3.1"]]
   :hooks [environ.leiningen.hooks]

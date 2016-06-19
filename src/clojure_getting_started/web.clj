@@ -1,13 +1,18 @@
 (ns clojure-getting-started.web
   (:use [selmer.parser]
-        [clojure.java.jdbc]
-        )
+        [clojure.java.jdbc])
   (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
             [compojure.handler :refer [site]]
             [compojure.route :as route]
             [clojure.java.io :as io]
             [ring.adapter.jetty :as jetty]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]]
+            [migratus.core :as migratus]))
+
+(def migratus-config {:store                :database
+                      :migration-dir        "migrations/"
+                      :migration-table-name "migrations"
+                      :db (env :database-url)})
 
 (def db (env :database-url))
 
@@ -31,6 +36,7 @@
   (route/not-found "Page not found"))
 
 (defn -main [& [port]]
+  (migratus/migrate migratus-config)
   (let [port (Integer. (or port (env :port) 5000))]
     (jetty/run-jetty (site #'app) {:port port :join? false})))
 
