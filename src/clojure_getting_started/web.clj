@@ -1,5 +1,7 @@
 (ns clojure-getting-started.web
-  (:use [selmer.parser])
+  (:use [selmer.parser]
+        [clojure.java.jdbc]
+        )
   (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
             [compojure.handler :refer [site]]
             [compojure.route :as route]
@@ -7,11 +9,16 @@
             [ring.adapter.jetty :as jetty]
             [environ.core :refer [env]]))
 
+(def db (env :database-url))
+
+(def posts (query db
+                  ["select title, heading from posts"]))
+
 (def posts-2 [{:title "newer first post title" :heading "hellooooooooooo"}
               {:title "post title 2" :heading "have a nice day today"}
               {:title "third post" :heading "aaaaaaaaaaaaaaaaaaa"}])
 
-(def index-page-2 (render-file "templates/index.html" {:posts posts-2}))
+(def index-page-2 (render-file "templates/index.html" {:posts posts}))
 
 (defn splash []
   {:status 200
