@@ -7,7 +7,9 @@
             [clojure.java.io :as io]
             [ring.adapter.jetty :as jetty]
             [environ.core :refer [env]]
-            [migratus.core :as migratus]))
+            [clojure.pprint :refer [pprint]]
+            [migratus.core :as migratus]
+            [ring.middleware.session.cookie :refer [cookie-store]]))
 
 (def migratus-config {:store                :database
                       :migration-dir        "migrations/"
@@ -31,14 +33,19 @@
    :body "Hello from Heroku"})
 
 (defroutes app
-  (GET "/" [] index-page-2)
+  (GET "/" {{counter :counter} :session}
+       {:session {:counter 0}
+        :body (do (pprint counter)
+                index-page-2)})
   (route/resources "/")
   (route/not-found "Page not found"))
 
 (defn -main [& [port]]
   (migratus/migrate migratus-config)
   (let [port (Integer. (or port (env :port) 5000))]
-    (jetty/run-jetty (site #'app) {:port port :join? false})))
+    (jetty/run-jetty (site #'app
+                           {:session {:store (cookie-store {:key (.getBytes (env :cookie-store-key))})}})
+                     {:port port :join? false})))
 
 ;; For interactive development:
 ;; (.stop server)
