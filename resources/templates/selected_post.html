@@ -12,10 +12,10 @@
     <title>Starter Template for Bootstrap</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="starter-template.css" rel="stylesheet">
+    <link href="/starter-template.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -43,6 +43,11 @@
             <li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li>
           </ul>
+          <ul class="nav navbar-nav" style = "float:right">
+            <li><a href="#">Hello {{name}}</a></li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Log out</a></li>
+          </ul>
         </div><!--/.nav-collapse -->
       </div>
     </nav>
@@ -50,24 +55,13 @@
     <div class="container">
 
       <ul class="nav nav-pills nav-justified">
-        <li class="active" id = "recent-posts-button"><a href="#">Recent Posts</a></li>
-        <li id = "selected-post-button"><a href="#">Selected Post</a></li>
+        <li id = "recent-posts-button"><a href="/recent">Recent Posts</a></li>
+        <li class="active" id = "selected-post-button"><a href="#">Selected Post</a></li>
         <li><a href="#">Menu 2</a></li>
         <li><a href="#">Menu 3</a></li>
       </ul>
 
-      <div id ="recent-posts-page">
-        <div class="list-group posts">
-          {% for post in posts %}
-          <a href="#" class="list-group-item">
-            <h4 class="list-group-item-heading">{{post.title}}</h4>
-            <p class="list-group-item-text">{{post.heading}}</p>
-          </a>
-          {% endfor %}
-        </div>
-      </div>
-
-      <div id ="selected-post-page" class = "hidden">
+      <div id ="selected-post-page">
         <h2>Post title</h2>
         <p>blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah </p>
       </div>
@@ -81,21 +75,5 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
-
-    <script>
-      $("#recent-posts-button").on( "click", function( event ) {
-        $(".nav-pills li").removeClass("active");
-        $("#recent-posts-button").addClass("active");
-        $("#recent-posts-page").removeClass("hidden");
-        $("#selected-post-page").addClass("hidden");
-      });
-
-      $("#selected-post-button").on( "click", function( event ) {
-        $(".nav-pills li").removeClass("active");
-        $("#selected-post-button").addClass("active");
-        $("#recent-posts-page").addClass("hidden");
-        $("#selected-post-page").removeClass("hidden");
-      });
-    </script>
   </body>
 </html>

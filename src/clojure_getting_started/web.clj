@@ -1,5 +1,5 @@
 (ns clojure-getting-started.web
-  (:use [selmer.parser]
+  (:use
         [clojure.java.jdbc])
   (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
             [compojure.handler :refer [site]]
@@ -9,6 +9,7 @@
             [environ.core :refer [env]]
             [clojure.pprint :refer [pprint]]
             [migratus.core :as migratus]
+            [selmer.parser :refer [render-file]]
             [ring.middleware.session.cookie :refer [cookie-store]]))
 
 (def migratus-config {:store                :database
@@ -25,7 +26,15 @@
               {:title "post title 2" :heading "have a nice day today"}
               {:title "third post" :heading "aaaaaaaaaaaaaaaaaaa"}])
 
-(def index-page-2 (render-file "templates/index.html" {:posts posts}))
+(defn recent-posts-page [name]
+  (do
+    (println "Name: " name)
+    (render-file "templates/recent_posts.html" {:posts posts :name name})))
+
+(defn selected-post-page [name]
+  (do
+    (println "Name: " name)
+    (render-file "templates/selected_post.html" {:name name})))
 
 (defn splash []
   {:status 200
@@ -33,14 +42,26 @@
    :body "Hello from Heroku"})
 
 (defroutes app
-  (GET "/" {{counter :counter} :session}
-       {:session {:counter 0}
-        :body (do (pprint counter)
-                index-page-2)})
+  (GET "/" {{name :name} :session}
+       {:session {:name name}
+        :body (recent-posts-page name)})
+  (GET "/recent" {{name :name} :session}
+       {:session {:name name}
+        :body (recent-posts-page name)})
+  (GET "/selected" {{name :name} :session}
+       {:session {:name name}
+        :body (selected-post-page name)})
+  (GET "/user/:name" [name]
+       {:session {:name name}
+        :body (selected-post-page name)})
   (route/resources "/")
   (route/not-found "Page not found"))
 
 (defn -main [& [port]]
+  (if (nil? (env :production))
+    (do (println "selmer cache turned off")
+      (selmer.parser/cache-off!))
+    (println "selmer cache left on"))
   (migratus/migrate migratus-config)
   (let [port (Integer. (or port (env :port) 5000))]
     (jetty/run-jetty (site #'app
