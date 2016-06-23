@@ -1,1 +1,0 @@
-web: java $JVM_OPTS -cp target/corollary-standalone.jar clojure.main -m corollary.core
