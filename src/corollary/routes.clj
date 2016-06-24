@@ -12,21 +12,20 @@
    :body "Hello from Heroku"})
 
 ;;Is it really necessary to "mirror" the session data? probably not.
+;;ACTUALLY I think you do. Theory: whenever you set a key in the session, you need to provide correct values for ALL other keys.
 ;;"the rest of the route is encased in an implicit do block, just like normal functions"
 (defroutes app
   (GET "/" {{name :name selected-id :selected-id} :session}
-       {:session {:name name}
-        :body (views/recent-posts name selected-id)})
+       (views/recent-posts name selected-id))
   (GET "/recent" {{name :name selected-id :selected-id} :session}
-       {:session {:name name :selected-id selected-id}
-        :body (views/recent-posts name selected-id)})
+       (views/recent-posts name selected-id))
   (GET "/selected/:postid" {{name :name} :session
                             {postid :postid} :params}
-       {:session {:name name :selected-id postid}
+       {:session {:selected-id postid :name name}
         :body (views/selected-post name postid)})
   (GET "/user/:name" [name]
        {:session {:name name}
-        :body (views/selected-post name)})
+        :body (views/selected-post name 0)})
   (GET "/compose" []
        (views/compose-post))
   (POST "/addpost" [title heading]
