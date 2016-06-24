@@ -1,0 +1,27 @@
+{% extends "templates/base.html" %}
+
+{% block navpills %}
+<ul class="nav nav-pills nav-justified">
+
+  <li {% ifequal page "recent" %} class="active" {% endifequal %}
+      id = "recent-posts-button">
+    <a href="/recent">Recent Posts</a>
+  </li>
+
+  <li {% ifequal page "selected" %} class="active" {% endifequal %}
+      id = "selected-post-button">
+    <a href="/selected/{% if selected-id %}{{selected-id}}{% else %}0{% endif %}">
+      Selected Post
+    </a>
+  </li>
+
+  <li>
+    <a href="#">Menu 2</a>
+  </li>
+
+  <li>
+    <a href="#">Menu 3</a>
+  </li>
+
+</ul>
+{% endblock %}
