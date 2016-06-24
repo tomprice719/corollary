@@ -1,12 +1,12 @@
 (ns corollary.core
-  (:require [compojure.handler :refer [site]]
-            [clojure.java.io :as io]
-            [ring.adapter.jetty :as jetty]
-            [environ.core :refer [env]]
-            [migratus.core :as migratus]
-            [ring.middleware.session.cookie :refer [cookie-store]]
-            [selmer.parser]
-            [corollary.routes :refer [app]]))
+  (require [compojure.handler :refer [site]]
+           [clojure.java.io :as io]
+           [ring.adapter.jetty :as jetty]
+           [environ.core :refer [env]]
+           [migratus.core :as migratus]
+           [ring.middleware.session.cookie :refer [cookie-store]]
+           [selmer.parser]
+           [corollary.routes :refer [app]]))
 
 (def migratus-config {:store                :database
                       :migration-dir        "migrations/"
