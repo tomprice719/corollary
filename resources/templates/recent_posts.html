@@ -56,7 +56,10 @@
 
       <ul class="nav nav-pills nav-justified">
         <li class="active" id = "recent-posts-button"><a href="#">Recent Posts</a></li>
-        <li id = "selected-post-button"><a href="/selected">Selected Post</a></li>
+        <li id = "selected-post-button">
+          <a href="/selected/{% if selected-id %}{{selected-id}}{% else %}0{% endif %}">
+            Selected Post
+          </a></li>
         <li><a href="#">Menu 2</a></li>
         <li><a href="#">Menu 3</a></li>
       </ul>
@@ -64,7 +67,7 @@
       <div id ="recent-posts-page">
         <div class="list-group posts">
           {% for post in posts %}
-          <a href="#" class="list-group-item">
+          <a href="/selected/{{post.did}}" class="list-group-item">
             <h4 class="list-group-item-heading">{{post.title}}</h4>
             <p class="list-group-item-text">{{post.heading}}</p>
           </a>

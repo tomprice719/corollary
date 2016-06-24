@@ -12,12 +12,13 @@
   (GET "/" {{name :name} :session}
        {:session {:name name}
         :body (views/recent-posts-page name)})
-  (GET "/recent" {{name :name} :session}
-       {:session {:name name}
-        :body (views/recent-posts-page name)})
-  (GET "/selected" {{name :name} :session}
-       {:session {:name name}
-        :body (views/selected-post-page name)})
+  (GET "/recent" {{name :name selected-id :selected-id} :session}
+       {:session {:name name :selected-id selected-id}
+        :body (views/recent-posts-page name selected-id)})
+  (GET "/selected/:postid" {{name :name} :session
+                            {postid :postid} :params}
+       {:session {:name name :selected-id postid}
+        :body (views/selected-post-page name postid)})
   (GET "/user/:name" [name]
        {:session {:name name}
         :body (views/selected-post-page name)})

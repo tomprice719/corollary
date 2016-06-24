@@ -12,10 +12,10 @@
     <title>Starter Template for Bootstrap</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="starter-template.css" rel="stylesheet">
+    <link href="/starter-template.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -43,6 +43,11 @@
             <li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li>
           </ul>
+          <ul class="nav navbar-nav" style = "float:right">
+            <li><a href="#">Hello {{name}}</a></li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Log out</a></li>
+          </ul>
         </div><!--/.nav-collapse -->
       </div>
     </nav>
@@ -57,8 +62,8 @@
       </ul>
 
       <div id ="selected-post-page">
-        <h2>Post title</h2>
-        <p>blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah </p>
+        <h2>{{post.title}}</h2>
+        <p>{{post.heading}}</p>
       </div>
 
     </div><!-- /.container -->
