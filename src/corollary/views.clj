@@ -17,13 +17,13 @@
               {:title "post title 2" :heading "have a nice day today"}
               {:title "third post" :heading "aaaaaaaaaaaaaaaaaaa"}])
 
-(defn recent-posts [name selected-id]
+(defn recent-posts [name selected]
   (do
-    (render-file "templates/recent_posts.html" {:posts (posts) :name name :selected-id selected-id :page "recent"})))
+    (render-file "templates/recent_posts.html" {:posts (posts) :name name :selected selected :page "recent"})))
 
-(defn selected-post [name post-id]
+(defn selected-post [name selected]
   (do
-    (render-file "templates/selected_post.html" {:name name :post (post post-id) :page "selected"})))
+    (render-file "templates/selected_post.html" {:name name :post (post selected) :selected selected :page "selected"})))
 
 (defn compose-post []
   (render-file "templates/compose_post.html" {})) ;; Is .html extension appropriate for template files? Yes, it is.

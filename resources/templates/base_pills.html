@@ -5,15 +5,17 @@
 
   <li {% ifequal page "recent" %} class="active" {% endifequal %}
       id = "recent-posts-button">
-    <a href="/recent">Recent Posts</a>
+    <a href="/recent{% if selected %}?selected={{selected}}{% endif %}">Recent Posts</a>
   </li>
 
+  {% if selected%}
   <li {% ifequal page "selected" %} class="active" {% endifequal %}
       id = "selected-post-button">
-    <a href="/selected/{% if selected-id %}{{selected-id}}{% else %}0{% endif %}">
+    <a href="/selected?selected={{selected}}">
       Selected Post
     </a>
   </li>
+  {% endif %}
 
   <li>
     <a href="#">Menu 2</a>

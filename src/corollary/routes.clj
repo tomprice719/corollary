@@ -18,23 +18,25 @@
 ;;ACTUALLY I think you do. Theory: whenever you set a key in the session, you need to provide correct values for ALL other keys.
 ;;"the rest of the route is encased in an implicit do block, just like normal functions"
 (defroutes app
-  (GET "/" {{name :name selected-id :selected-id} :session}
-       (views/recent-posts name selected-id))
-  (GET "/recent" {{name :name selected-id :selected-id} :session}
-       (views/recent-posts name selected-id))
-  (GET "/selected/:postid" {{name :name} :session
-                            {postid :postid} :params}
-       {:session {:selected-id postid :name name}
-        :body (views/selected-post name postid)})
+  (GET "/" {{name :name} :session
+                  {selected "selected"} :query-params}
+       (views/recent-posts name selected))
+  (GET "/recent" {{name :name} :session
+                  {selected "selected"} :query-params}
+       (views/recent-posts name selected))
+  (GET "/selected" {{name :name} :session
+                            {selected "selected"} :query-params}
+       (views/selected-post name selected))
   (GET "/user/:name" [name]
        {:session {:name name}
         :body (views/selected-post name 0)})
   (GET "/compose" []
        (views/compose-post))
+  (GET "/request" request (str request))
   (POST "/addpost" [title heading]
         (let [postid (rand-int 100000)]
           (updates/create-post postid title heading)
-          (redirect (str "/selected/" postid) :see-other)))
+          (redirect (str "/selected?selected=" postid) :see-other)))
   (route/resources "/")
   (route/not-found "Page not found"))
 

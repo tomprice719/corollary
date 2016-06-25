@@ -4,7 +4,7 @@
 <div id ="recent-posts-page">
   <div class="list-group posts">
     {% for post in posts %}
-    <a href="/selected/{{post.did}}" class="list-group-item">
+    <a href="/selected?selected={{post.did}}" class="list-group-item">
       <h4 class="list-group-item-heading">{{post.title}}</h4>
       <p class="list-group-item-text">{{post.heading}}</p>
     </a>
