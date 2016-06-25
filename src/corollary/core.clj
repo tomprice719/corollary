@@ -2,7 +2,8 @@
   (require [clojure.java.io :as io]
            [ring.adapter.jetty :as jetty]
            [migratus.core :as migratus]
-           [selmer.parser]))
+           [selmer.parser]
+           [environ.core :refer [env]]))
 
 (def migratus-config {:store                :database
                       :migration-dir        "migrations/"
