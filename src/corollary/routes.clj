@@ -1,10 +1,13 @@
 (ns corollary.routes
   (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
             [compojure.route :as route]
+            [compojure.handler :refer [site]]
             [corollary.views :as views]
             [corollary.updates :as updates]
             [clojure.core :refer [rand-int]]
-            [ring.util.response :refer [redirect]]))
+            [ring.util.response :refer [redirect]]
+            [ring.middleware.session.cookie :refer [cookie-store]]
+            [environ.core :refer [env]]))
 
 (defn splash []
   {:status 200
@@ -34,3 +37,7 @@
           (redirect (str "/selected/" postid) :see-other)))
   (route/resources "/")
   (route/not-found "Page not found"))
+
+(def mysite
+  (site #'app
+        {:session {:store (cookie-store {:key (.getBytes (env :cookie-store-key))})}}))

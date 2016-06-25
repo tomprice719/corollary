@@ -1,12 +1,8 @@
 (ns corollary.core
-  (require [compojure.handler :refer [site]]
-           [clojure.java.io :as io]
+  (require [clojure.java.io :as io]
            [ring.adapter.jetty :as jetty]
-           [environ.core :refer [env]]
            [migratus.core :as migratus]
-           [ring.middleware.session.cookie :refer [cookie-store]]
-           [selmer.parser]
-           [corollary.routes :refer [app]]))
+           [selmer.parser]))
 
 (def migratus-config {:store                :database
                       :migration-dir        "migrations/"
@@ -19,21 +15,19 @@
       (selmer.parser/cache-off!))
     (println "selmer cache left on"))
   (migratus/migrate migratus-config)
-  (let [port (Integer. (or port (env :port) 5000))]
-    (jetty/run-jetty (site #'app
-                           {:session {:store (cookie-store {:key (.getBytes (env :cookie-store-key))})}})
+  (let [port (Integer. (or port (env :port) 5000))
+        routes-ns (find-ns 'corollary.routes)
+        mysite (ns-resolve routes-ns 'mysite)]
+    (jetty/run-jetty mysite
                      {:port port :join? false})))
 
 (defn start []
+  (require 'corollary.routes :reload-all)
   (def server (-main)))
 
 (defn stop []
   (.stop server))
 
-(defn reload []
-  (require 'corollary.core :reload-all))
-
 (defn restart []
   (stop)
-  (reload)
   (start))
