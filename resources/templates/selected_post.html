@@ -3,6 +3,6 @@
 {% block content %}
 <div id ="selected-post-page">
   <h2>{{post.title}}</h2>
-  <p>{{post.heading}}</p>
+  <p>{{post.heading|safe}}</p>
 </div>
 {% endblock %}
