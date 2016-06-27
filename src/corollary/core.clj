@@ -11,6 +11,7 @@
                       :db (env :database-url)})
 
 (defn -main [& [port]]
+  (require 'corollary.routes :reload-all)
   (if (nil? (env :production))
     (do (println "selmer cache turned off")
       (selmer.parser/cache-off!))
@@ -23,7 +24,6 @@
                      {:port port :join? false})))
 
 (defn start []
-  (require 'corollary.routes :reload-all)
   (def server (-main)))
 
 (defn stop []
