@@ -1,13 +1,14 @@
 (ns corollary.routes
   (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
             [compojure.route :as route]
-            [compojure.handler :refer [site]]
+            [compojure.handler :refer [site]] ;; DEPRECATED
             [corollary.views :as views]
             [corollary.updates :as updates]
             [clojure.core :refer [rand-int]]
             [ring.util.response :refer [redirect]]
             [ring.middleware.session.cookie :refer [cookie-store]]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]]
+            [clojure.pprint :refer [pprint]]))
 
 (defn splash []
   {:status 200
@@ -33,9 +34,10 @@
   (GET "/compose" []
        (views/compose-post))
   (GET "/request" request (str request))
-  (POST "/addpost" [title heading]
-        (let [postid (rand-int 100000)]
-          (updates/create-post postid title heading)
+  (POST "/addpost" {session :session
+                    params :params}
+        (let [postid (views/next-post-id)]
+          (updates/create-post postid (merge session params))
           (redirect (str "/selected?selected=" postid) :see-other)))
   (route/resources "/")
   (route/not-found "Page not found"))

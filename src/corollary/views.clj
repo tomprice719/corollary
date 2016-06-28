@@ -1,17 +1,27 @@
 (ns corollary.views
   (require [selmer.parser :refer [render-file]]
+           [corollary.utils :as utils]
            [clojure.java.jdbc :refer [query]]
            [environ.core :refer [env]]))
 
 (def db (env :database-url))
 
-(defn post [id]
+(defn date-string [date]
+  (let [time-diff (- (utils/now) date)]
+    (str (quot time-diff 1000) " seconds ago")))
+
+(defn next-post-id [] ;; Move this into queries module
+  (-> (query db ["SELECT nextval('posts_id_seq')"]) first :nextval))
+
+(defn post [id] ;;Get rid of having to call first
   (first
     (query db
-           [(str "select title, heading from posts where did = '" id "'")])))
+           [(str "select title, date, processed_content from posts where id = '" id "'")]
+           {:row-fn #(update % :date date-string)})))
 
 (defn posts [] (query db
-                      ["select did, title, heading from posts"]))
+                      ["select title, author, date, id from posts"]
+                      {:row-fn #(update % :date date-string)}))
 
 (def posts-2 [{:title "newer first post title" :heading "hellooooooooooo"}
               {:title "post title 2" :heading "have a nice day today"}

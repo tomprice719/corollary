@@ -10,6 +10,9 @@
                       :migration-table-name "migrations"
                       :db (env :database-url)})
 
+(defn new-migration-script [name]
+  (migratus/create migratus-config name))
+
 (defn -main [& [port]]
   (require 'corollary.routes :reload-all)
   (if (nil? (env :production))

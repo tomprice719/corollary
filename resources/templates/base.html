@@ -39,14 +39,20 @@
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li><a href="#">Link</a></li>
+            <li><a href="#">Link</a></li>
+            <li><a href="#">Link</a></li>
           </ul>
-          <ul class="nav navbar-nav" style = "float:right">
-            <li><a href="#">Hello {{name}}</a></li>
-            <li><a href="#">Settings</a></li>
-            <li><a href="#">Log out</a></li>
+          <ul class="nav navbar-nav navbar-right">
+            {% if name %} <li> <p class="navbar-text"> Hello {{name}} </p></li> {% endif %}
+            <li><a href="#">Link</a></li>
+            {% if name %}
+            <li>
+              <p class="navbar-btn">
+                <a href="/compose" class="btn btn-default">New Post</a>
+              </p>
+            </li>
+            {% endif %}
           </ul>
         </div><!--/.nav-collapse -->
       </div>
