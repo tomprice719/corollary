@@ -10,9 +10,6 @@
   (let [time-diff (- (utils/now) date)]
     (str (quot time-diff 1000) " seconds ago")))
 
-(defn next-post-id [] ;; Move this into queries module
-  (-> (query db ["SELECT nextval('posts_id_seq')"]) first :nextval))
-
 (defn post [id] ;;Get rid of having to call first
   (first
     (query db
@@ -27,13 +24,20 @@
               {:title "post title 2" :heading "have a nice day today"}
               {:title "third post" :heading "aaaaaaaaaaaaaaaaaaa"}])
 
-(defn recent-posts [name selected]
-  (do
-    (render-file "templates/recent_posts.html" {:posts (posts) :name name :selected selected :page "recent"})))
+(defn recent-posts [{:keys [name selected]}]
+  {:body
+   (render-file
+     "templates/recent_posts.html"
+     {:posts (posts)
+      :name name
+      :selected selected
+      :page "recent"})})
 
-(defn selected-post [name selected]
-  (do
-    (render-file "templates/selected_post.html" {:name name :post (post selected) :selected selected :page "selected"})))
+(defn selected-post [{:keys [name selected]}]
+  {:body
+   (render-file "templates/selected_post.html"
+                {:name name :post (post selected) :selected selected :page "selected"})})
 
-(defn compose-post []
-  (render-file "templates/compose_post.html" {})) ;; Is .html extension appropriate for template files? Yes, it is.
+(defn compose-post [params]
+  {:body (render-file "templates/compose_post.html" {})})
+
