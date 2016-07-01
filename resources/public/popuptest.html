@@ -73,11 +73,12 @@
             </div>
             <div class="modal-body">
               <p>Some text in the modal.</p>
-              <div id="bloodhound">
-                <input class="typeahead form-control" type="text" placeholder="States of USA">
+              <div id = "new-parent-title">
+                <input id = "new-parent-title-input" class="typeahead form-control" />
               </div>
             </div>
             <div class="modal-footer">
+              <button id="add-parent" type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
           </div>
@@ -111,7 +112,6 @@
     <script src="bootstrap/js/bootstrap.min.js"></script>
     <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
     <script src='typeahead.bundle.js'></script>
-    <script src='mustache.js'></script>
     <script src='underscore.js'></script>
     <script src='backbone.js'></script>
 
@@ -124,7 +124,11 @@
       ParentsView = Backbone.View.extend({
         tagName: 'li',
         render: function(){
-          this.$el.html(Mustache.render(parentTemplate, this.model.attributes));
+          this.$el.html(this.model.attributes['title']);
+          var button = document.createElement('button');
+          button.innerHTML = "remove";
+          button.className = "btn btn-primary btn-xs destroy pull-right";
+          this.$el.append(button);
           return this;
         },
         events: {
@@ -147,35 +151,26 @@
         $('#parents').append(view.render().el);
       }
 
-      $.ajax({url: "template.mustache",
-              dataType:    "text",
-              mimeType: 'text/plain; charset=x-user-defined',
-              success: function( data ) {
-                parentTemplate = data;
-                addParent(1);
-                addParent(2);
-                addParent(3);
-                addParent(4);
-                addParent(5);
-                addParent(6);
-                addParent(7);
-              }
-             });
+      addParent(1);
+      addParent(2);
+      addParent(3);
+      addParent(4);
+      addParent(5);
+      addParent(6);
+      addParent(7);
 
 
-
-
-
-
-
-
+      $("#add-parent").click(function(){
+        var t = $('#new-parent-title-input').val();
+        alert(t);
+        addParent(t);
+      });
 
       // constructs the suggestion engine
       var states = new Bloodhound({
         datumTokenizer: Bloodhound.tokenizers.whitespace,
         queryTokenizer: Bloodhound.tokenizers.whitespace,
-        // `states` is an array of state names defined in "The Basics"
-        local: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'AAA', 'AaAAA', 'California',
+        local: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
                 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',
                 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
                 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
@@ -187,14 +182,16 @@
                ]
       });
 
-      $('#bloodhound .typeahead').typeahead({
+      $('#new-parent-title .typeahead').typeahead({
         hint: true,
         highlight: true,
         minLength: 1
-      },                                            {
+      },
+                                 {
         name: 'states',
         source: states
       });
+
     </script>
   </body>
 </html>
