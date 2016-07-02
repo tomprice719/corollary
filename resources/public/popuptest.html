@@ -44,9 +44,7 @@
             <li><a href="#">Link</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
-
             <li><a href="#">Link</a></li>
-
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -58,23 +56,53 @@
         Compose post
       </h1>
 
-      <!-- Trigger the modal with a button -->
-      <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>
+      <form action="/addpost" method="post">
+        <fieldset class="form-group">
+          <label for="exampleInputEmail1">Title</label>
+          <input type="text" name="title" class="form-control" placeholder="Enter title">
+        </fieldset>
+        <fieldset class="form-group">
+          <label for="exampleTextarea">Content</label>
+          <textarea class="form-control" name="content" rows="3" placeholder = "Enter content"></textarea>
+          <small class="text-muted">This is where you put the content</small>
+        </fieldset>
+        <div class = "row form-group">
+          <div class="col-sm-6">
+            <h3>
+              Parents
+              <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#addParentModal">Add parent</button>
+            </h3>
+            <ul id = "parents" class = "list-group">
+            </ul>
+          </div>
+          <div class="col-sm-6">
+            <h3>
+              Children
+              <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#addChildModal">Add child</button>
+            </h3>
+            <ul id = "children" class = "list-group">
+            </ul>
+          </div>
+        </div>
+        <!-- Trigger the modal with a button -->
+
+        <button type="submit" class="btn btn-primary btn-lg pull-right">Submit</button>
+      </form>
 
       <!-- Modal -->
-      <div id="myModal" class="modal fade" role="dialog">
+      <div id="addParentModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
 
           <!-- Modal content-->
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Modal Header</h4>
+              <h4 class="modal-title">Add Parent Post</h4>
             </div>
             <div class="modal-body">
-              <p>Some text in the modal.</p>
+              <p>Enter the title of the post you would like to add as a parent.</p>
               <div id = "new-parent-title">
-                <input class="typeahead form-control" />
+                <input id="new-parent-title-input" class="typeahead form-control" />
               </div>
             </div>
             <div class="modal-footer">
@@ -86,21 +114,30 @@
         </div>
       </div>
 
-      <form action="/addpost" method="post">
-        <fieldset class="form-group">
-          <label for="exampleInputEmail1">Title</label>
-          <input type="text" name="title" class="form-control" placeholder="Enter title">
-        </fieldset>
-        <fieldset class="form-group">
-          <label for="exampleTextarea">Content</label>
-          <textarea class="form-control" name="content" rows="3" placeholder = "Enter content"></textarea>
-          <small class="text-muted">This is where you put the content</small>
-        </fieldset>
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </form>
+      <!-- Modal -->
+      <div id="addChildModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
 
-      <ul id = "parents" class = "list-group">
-      </ul>
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Add Parent Post</h4>
+            </div>
+            <div class="modal-body">
+              <p>Enter the title of the post you would like to add as a child.</p>
+              <div id = "new-child-title">
+                <input id="new-child-title-input" class="typeahead form-control" />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button id="add-child" type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
 
     </div><!-- /.container -->
 
@@ -117,18 +154,14 @@
 
     <script language = "javascript">
 
-      var parents = {};
-      var parentTemplate = "";
-
-      // renders individual todo items list (li)
-      ParentsView = Backbone.View.extend({
+      ParentChildView = Backbone.View.extend({
         tagName: 'li',
         render: function(){
           this.$el.html(this.model.attributes['title']);
           var button = document.createElement('button');
           button.innerHTML = "remove";
           button.className = "btn btn-primary btn-xs destroy pull-right";
-          this.$el.append(button);
+          this.$el.prepend(button);
           return this;
         },
         events: {
@@ -137,18 +170,26 @@
         destroy: function(){
           this.remove();
           this.model.destroy();
-          alert(JSON.stringify(parentList.toJSON()));
         }
       });
 
       parentList = new Backbone.Collection();
+      childList = new Backbone.Collection();
 
       function addParent(title) {
         var model = new Backbone.Model({title: title});
         parentList.add(model);
-        var view = new ParentsView({model: model,
+        var view = new ParentChildView({model: model,
                                       className: "list-group-item"});
         $('#parents').append(view.render().el);
+      }
+
+      function addChild(title) {
+        var model = new Backbone.Model({title: title});
+        childList.add(model);
+        var view = new ParentChildView({model: model,
+                                        className: "list-group-item"});
+        $('#children').append(view.render().el);
       }
 
       addParent(1);
@@ -159,25 +200,35 @@
       addParent(6);
       addParent(7);
 
+      addChild(1);
+      addChild(2);
+      addChild(3);
+      addChild(4);
+      addChild(5);
+      addChild(6);
+      addChild(7);
+
 
       $("#add-parent").click(function(){
-        var t = $('#new-parent-title input').val();
-        alert(t);
-        addParent(t);
+        addParent($('#new-parent-title-input').val());
       });
 
-      /*
-      $("#form").submit( function(eventObj) {
-        $('<input />').attr('type', 'hidden')
-        .attr('name', "something")
-        .attr('value', "something")
-        .appendTo('#form');
-        return true;
+      $("#add-child").click(function(){
+        addChild($('#new-child-title-input').val());
       });
-      */
+
+      function addFormData(name, collection) {
+        $('<input />').attr('type', 'hidden')
+        .attr('name', name)
+        .attr('value', JSON.stringify(collection))
+        .appendTo('#form');
+      }
+
+      addFormData("parents", parentList);
+      addFormData("children", childList);
 
       // constructs the suggestion engine
-      var states = new Bloodhound({
+      var bh = new Bloodhound({
         datumTokenizer: Bloodhound.tokenizers.whitespace,
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         local: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
@@ -199,7 +250,17 @@
       },
                                  {
         name: 'states',
-        source: states
+        source: bh
+      });
+
+      $('#new-child-title .typeahead').typeahead({
+        hint: true,
+        highlight: true,
+        minLength: 1
+      },
+                                                  {
+        name: 'states',
+        source: bh
       });
 
     </script>

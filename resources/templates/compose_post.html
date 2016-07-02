@@ -1,20 +1,214 @@
 {% extends "templates/base.html" %}
 
 {% block content %}
-<h1>
-  Compose post
-</h1>
+      <h1>
+        Compose post
+      </h1>
 
-<form action="/addpost" method="post">
-  <fieldset class="form-group">
-    <label for="exampleInputEmail1">Title</label>
-    <input type="text" name="title" class="form-control" placeholder="Enter title">
-  </fieldset>
-  <fieldset class="form-group">
-    <label for="exampleTextarea">Content</label>
-    <textarea class="form-control" name="content" rows="3" placeholder = "Enter content"></textarea>
-    <small class="text-muted">This is where you put the content</small>
-  </fieldset>
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+      <form id = "form" action="/addpost" method="post">
+        <fieldset class="form-group">
+          <label for="exampleInputEmail1">Title</label>
+          <input type="text" name="title" class="form-control" placeholder="Enter title">
+        </fieldset>
+        <fieldset class="form-group">
+          <label for="exampleTextarea">Content</label>
+          <textarea class="form-control" name="content" rows="3" placeholder = "Enter content"></textarea>
+          <small class="text-muted">This is where you put the content</small>
+        </fieldset>
+        <div class = "row form-group">
+          <div class="col-sm-6">
+            <h3>
+              Parents
+              <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#addParentModal">Add parent</button>
+            </h3>
+            <ul id = "parents" class = "list-group">
+            </ul>
+          </div>
+          <div class="col-sm-6">
+            <h3>
+              Children
+              <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#addChildModal">Add child</button>
+            </h3>
+            <ul id = "children" class = "list-group">
+            </ul>
+          </div>
+        </div>
+        <!-- Trigger the modal with a button -->
+
+        <button type="submit" class="btn btn-primary btn-lg pull-right">Submit</button>
+      </form>
+
+      <!-- Modal -->
+      <div id="addParentModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Add Parent Post</h4>
+            </div>
+            <div class="modal-body">
+              <p>Enter the title of the post you would like to add as a parent.</p>
+              <div id = "new-parent-title">
+                <input id="new-parent-title-input" class="typeahead form-control" />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button id="add-parent" type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Modal -->
+      <div id="addChildModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Add Parent Post</h4>
+            </div>
+            <div class="modal-body">
+              <p>Enter the title of the post you would like to add as a child.</p>
+              <div id = "new-child-title">
+                <input id="new-child-title-input" class="typeahead form-control" />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button id="add-child" type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+{% endblock %}
+
+{% block scripts %}
+<script src='typeahead.bundle.js'></script>
+<script src='underscore.js'></script>
+<script src='backbone.js'></script>
+
+<script language = "javascript">
+
+  ParentChildView = Backbone.View.extend({
+    tagName: 'li',
+    render: function(){
+      this.$el.html(this.model.attributes['title']);
+      var button = document.createElement('button');
+      button.innerHTML = "remove";
+      button.className = "btn btn-primary btn-xs destroy pull-right";
+      this.$el.append(button);
+      return this;
+    },
+    events: {
+      'click .destroy': 'destroy'
+    },
+    destroy: function(){
+      this.remove();
+      this.model.destroy();
+    }
+  });
+
+  parentList = new Backbone.Collection();
+  childList = new Backbone.Collection();
+
+  function addParent(title) {
+    var model = new Backbone.Model({title: title});
+    parentList.add(model);
+    var view = new ParentChildView({model: model,
+                                    className: "list-group-item"});
+    $('#parents').prepend(view.render().el);
+  }
+
+  function addChild(title) {
+    var model = new Backbone.Model({title: title});
+    childList.add(model);
+    var view = new ParentChildView({model: model,
+                                    className: "list-group-item"});
+    $('#children').prepend(view.render().el);
+  }
+
+  addParent(1);
+  addParent(2);
+  addParent(3);
+  addParent(4);
+  addParent(5);
+  addParent(6);
+  addParent(7);
+
+  addChild(1);
+  addChild(2);
+  addChild(3);
+  addChild(4);
+  addChild(5);
+  addChild(6);
+  addChild(7);
+
+
+  $("#add-parent").click(function(){
+    addParent($('#new-parent-title-input').val());
+    $('#new-parent-title-input').val('')
+  });
+
+  $("#add-child").click(function(){
+    addChild($('#new-child-title-input').val())
+    $('#new-child-title-input').val('');
+  });
+
+  function addFormData(name, collection) {
+    $('<input />').attr('type', 'hidden')
+    .attr('name', name)
+    .attr('value', JSON.stringify(collection))
+    .appendTo('#form');
+  }
+
+  $("#form").submit( function(eventObj) {
+    addFormData("parents", parentList);
+    addFormData("children", childList);
+    return true;
+  });
+
+  // constructs the suggestion engine
+  var bh = new Bloodhound({
+    datumTokenizer: Bloodhound.tokenizers.whitespace,
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    local: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
+            'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',
+            'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
+            'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
+            'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
+            'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota',
+            'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',
+            'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
+            'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+           ]
+  });
+
+  $('#new-parent-title .typeahead').typeahead({
+    hint: true,
+    highlight: true,
+    minLength: 1
+  },
+                                              {
+    name: 'states',
+    source: bh
+  });
+
+  $('#new-child-title .typeahead').typeahead({
+    hint: true,
+    highlight: true,
+    minLength: 1
+  },
+                                             {
+    name: 'states',
+    source: bh
+  });
+
+</script>
 {% endblock %}
