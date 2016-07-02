@@ -74,7 +74,7 @@
             <div class="modal-body">
               <p>Some text in the modal.</p>
               <div id = "new-parent-title">
-                <input id = "new-parent-title-input" class="typeahead form-control" />
+                <input class="typeahead form-control" />
               </div>
             </div>
             <div class="modal-footer">
@@ -161,10 +161,20 @@
 
 
       $("#add-parent").click(function(){
-        var t = $('#new-parent-title-input').val();
+        var t = $('#new-parent-title input').val();
         alert(t);
         addParent(t);
       });
+
+      /*
+      $("#form").submit( function(eventObj) {
+        $('<input />').attr('type', 'hidden')
+        .attr('name', "something")
+        .attr('value', "something")
+        .appendTo('#form');
+        return true;
+      });
+      */
 
       // constructs the suggestion engine
       var states = new Bloodhound({
