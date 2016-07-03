@@ -2,9 +2,8 @@
   (require [selmer.parser :refer [render-file]]
            [corollary.utils :as utils]
            [clojure.java.jdbc :refer [query]]
-           [environ.core :refer [env]]))
-
-(def db (env :database-url))
+           [corollary.utils :refer [db]]
+           [cheshire.core :as cheshire]))
 
 (defn date-string [date]
   (let [time-diff (- (utils/now) date)]
@@ -13,12 +12,19 @@
 (defn get-post [id] ;;Get rid of having to call first
   (first
     (query db
-           [(str "select title, date, processed_content from posts where id = '" id "'")]
+           ["select title, date, processed_content from posts where id = ?"
+            (Integer. id)]
            {:row-fn #(update % :date date-string)})))
 
-(defn get-posts [] (query db
-                      ["select title, author, date, id from posts"]
-                      {:row-fn #(update % :date date-string)}))
+(defn get-posts []
+  (query db
+         ["select title, author, date, id from posts"]
+         {:row-fn #(update % :date date-string)}))
+
+(defn get-post-titles []
+  (query db
+         ["select title from posts"]
+         {:row-fn :title}))
 
 (defn recent-posts [params]
   {:body
@@ -36,5 +42,7 @@
                         :page "selected"}))})
 
 (defn compose-post [params]
-  {:body (render-file "templates/compose_post.html" {})})
+  {:body (render-file "templates/compose_post.html"
+                      {:post-titles
+                       (cheshire/generate-string (get-post-titles))})})
 
