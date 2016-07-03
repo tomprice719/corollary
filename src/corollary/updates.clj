@@ -28,9 +28,7 @@
                                    (sql/where `(in title ~(seq parent_titles)))))))
 
 (defn add-parents [id parents]
-  (println "Parents: " parents)
   (let [sql-string (add-parents-sql id parents)]
-    (println sql-string)
     (jdbc/execute! db sql-string)))
 
 (defn add-children-sql [parent_id child_titles]
@@ -40,9 +38,7 @@
                                    (sql/where `(in title ~(seq child_titles)))))))
 
 (defn add-children [id children]
-  (println "Children: " children)
   (let [sql-string (add-children-sql id children)]
-    (println sql-string)
     (jdbc/execute! db sql-string)))
 
 (defn create-post [{:keys [name title content parents children]}]

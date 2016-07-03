@@ -100,10 +100,10 @@
     tagName: 'li',
     render: function(){
       this.$el.html(this.model.attributes['title']);
-      var button = document.createElement('button');
-      button.innerHTML = "remove";
-      button.className = "btn btn-primary btn-xs destroy pull-right";
-      this.$el.append(button);
+      $('<button />', {
+        html: "remove",
+        "class": "btn btn-primary btn-xs destroy pull-right"
+      }).appendTo(this.$el);
       return this;
     },
     events: {
@@ -145,10 +145,11 @@
   });
 
   function addFormData(name, collection) {
-    $('<input />').attr('type', 'hidden')
-    .attr('name', name)
-    .attr('value', JSON.stringify(collection))
-    .appendTo('#form');
+    $('<input />', {
+      "type":"hidden",
+      "name":name,
+      "value":JSON.stringify(collection)
+    }).appendTo('#form');
   }
 
   $("#form").submit( function(eventObj) {
