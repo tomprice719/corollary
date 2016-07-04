@@ -29,7 +29,8 @@
 
 (defn add-parents [id parents]
   (let [sql-string (add-parents-sql id parents)]
-    (jdbc/execute! db sql-string)))
+    (if (not-empty parents)
+      (jdbc/execute! db sql-string))))
 
 (defn add-children-sql [parent_id child_titles]
   (sql/sql (sql/insert pg :edges [:parent_id :child_id]
@@ -38,8 +39,9 @@
                                    (sql/where `(in title ~(seq child_titles)))))))
 
 (defn add-children [id children]
-  (let [sql-string (add-children-sql id children)]
-    (jdbc/execute! db sql-string)))
+  (if (not-empty children)
+    (let [sql-string (add-children-sql id children)]
+      (jdbc/execute! db sql-string))))
 
 (defn create-post [{:keys [name title content parents children]}]
   (let [id (next-post-id)]

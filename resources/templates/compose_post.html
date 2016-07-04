@@ -1,92 +1,92 @@
 {% extends "templates/base.html" %}
 
 {% block content %}
-      <h1>
-        Compose post
-      </h1>
+<h1>
+  Compose post
+</h1>
 
-      <form id = "form" action="/addpost" method="post">
-        <fieldset class="form-group">
-          <label for="exampleInputEmail1">Title</label>
-          <input type="text" name="title" class="form-control" placeholder="Enter title">
-        </fieldset>
-        <fieldset class="form-group">
-          <label for="exampleTextarea">Content</label>
-          <textarea class="form-control" name="content" rows="3" placeholder = "Enter content"></textarea>
-          <small class="text-muted">This is where you put the content</small>
-        </fieldset>
-        <div class = "row form-group">
-          <div class="col-sm-6">
-            <h3>
-              Parents
-              <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#addParentModal">Add parent</button>
-            </h3>
-            <ul id = "parents" class = "list-group">
-            </ul>
-          </div>
-          <div class="col-sm-6">
-            <h3>
-              Children
-              <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#addChildModal">Add child</button>
-            </h3>
-            <ul id = "children" class = "list-group">
-            </ul>
-          </div>
-        </div>
-        <!-- Trigger the modal with a button -->
+<form id = "form" action="/addpost" method="post">
+  <fieldset class="form-group">
+    <label for="exampleInputEmail1">Title</label>
+    <input type="text" name="title" class="form-control" placeholder="Enter title">
+  </fieldset>
+  <fieldset class="form-group">
+    <label for="exampleTextarea">Content</label>
+    <textarea class="form-control" name="content" rows="3" placeholder = "Enter content"></textarea>
+    <small class="text-muted">This is where you put the content</small>
+  </fieldset>
+  <div class = "row form-group">
+    <div class="col-sm-6">
+      <h3>
+        Parents
+        <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#addParentModal">Add parent</button>
+      </h3>
+      <ul id = "parents" class = "list-group">
+      </ul>
+    </div>
+    <div class="col-sm-6">
+      <h3>
+        Children
+        <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#addChildModal">Add child</button>
+      </h3>
+      <ul id = "children" class = "list-group">
+      </ul>
+    </div>
+  </div>
+  <!-- Trigger the modal with a button -->
 
-        <button type="submit" class="btn btn-primary btn-lg pull-right">Submit</button>
-      </form>
+  <button type="submit" class="btn btn-primary btn-lg pull-right">Submit</button>
+</form>
 
-      <!-- Modal -->
-      <div id="addParentModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
+<!-- Modal -->
+<div id="addParentModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
 
-          <!-- Modal content-->
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Add Parent Post</h4>
-            </div>
-            <div class="modal-body">
-              <p>Enter the title of the post you would like to add as a parent.</p>
-              <div id = "new-parent-title">
-                <input id="new-parent-title-input" class="typeahead form-control" />
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button id="add-parent" type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-          </div>
-
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Add Parent Post</h4>
+      </div>
+      <div class="modal-body">
+        <p>Enter the title of the post you would like to add as a parent.</p>
+        <div id = "new-parent-title">
+          <input id="new-parent-title-input" class="typeahead form-control" />
         </div>
       </div>
+      <div class="modal-footer">
+        <button id="add-parent" type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
 
-      <!-- Modal -->
-      <div id="addChildModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
+  </div>
+</div>
 
-          <!-- Modal content-->
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Add Parent Post</h4>
-            </div>
-            <div class="modal-body">
-              <p>Enter the title of the post you would like to add as a child.</p>
-              <div id = "new-child-title">
-                <input id="new-child-title-input" class="typeahead form-control" />
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button id="add-child" type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-          </div>
+<!-- Modal -->
+<div id="addChildModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
 
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Add Parent Post</h4>
+      </div>
+      <div class="modal-body">
+        <p>Enter the title of the post you would like to add as a child.</p>
+        <div id = "new-child-title">
+          <input id="new-child-title-input" class="typeahead form-control" />
         </div>
       </div>
+      <div class="modal-footer">
+        <button id="add-child" type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
@@ -163,7 +163,7 @@
     datumTokenizer: Bloodhound.tokenizers.whitespace,
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     local: {{post-titles|safe}}
-  });
+                          });
 
   $('#new-parent-title .typeahead').typeahead({
     hint: true,

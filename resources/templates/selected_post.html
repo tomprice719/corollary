@@ -1,8 +1,25 @@
 {% extends "templates/base_pills.html" %}
 
 {% block content %}
-<div id ="selected-post-page">
-  <h2>{{post.title}}</h2>
-  <p>{{post.processed_content|safe}}</p>
+<div class = "row">
+  <div class = "col-sm-8">
+    <h2>{{post.title}}</h2>
+    <p>{{post.processed_content|safe}}</p>
+  </div>
+  <div class = "col-sm-4">
+    <p>Parents:</p>
+    {% for parent in parents %}
+    <p>
+      <a href="/selected?selected={{parent.id}}">{{parent.title}}</a>
+    </p>
+    {% endfor %}
+    <p>Children:</p>
+    {% for child in children %}
+    <p>
+      <a href="/selected?selected={{child.id}}">{{child.title}}</a>
+    </p>
+    {% endfor %}
+  </div>
+
 </div>
 {% endblock %}

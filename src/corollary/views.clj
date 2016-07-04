@@ -9,6 +9,14 @@
   (let [time-diff (- (utils/now) date)]
     (str (quot time-diff 1000) " seconds ago")))
 
+(defn get-parents [id]
+  (query db ["select title, id from posts join edges on posts.id = edges.parent_id where edges.child_id = ?"
+             (Integer. id)]))
+
+(defn get-children [id]
+  (query db ["select title, id from posts join edges on posts.id = edges.child_id where edges.parent_id = ?"
+             (Integer. id)]))
+
 (defn get-post [id] ;;Get rid of having to call first
   (first
     (query db
@@ -39,7 +47,9 @@
    (render-file "templates/selected_post.html"
                 (merge params
                        {:post (get-post selected)
-                        :page "selected"}))})
+                        :page "selected"
+                        :parents (get-parents selected)
+                        :children (get-children selected)}))})
 
 (defn compose-post [params]
   {:body (render-file "templates/compose_post.html"
