@@ -16,6 +16,8 @@
 (defn migrate []
   (migratus/migrate migratus-config))
 
+
+;;TODO: try using declare to get rid of weird namespace stuff.
 (defn -main [& [port]]
   (require 'corollary.routes :reload-all)
   (if (nil? (env :production))

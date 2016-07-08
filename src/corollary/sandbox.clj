@@ -20,6 +20,8 @@
 
 (defn testquery2 [] (jdbc/query db ["select title from posts where id = ?" 7]))
 
+
+
 ;;(add-children-sql 7 ["test2" "test3" "test4"])
 ;;(add-parents-sql 5 ["parent1" "parent2" "another parent"])
 
