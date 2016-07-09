@@ -1,9 +1,9 @@
 (ns corollary.views
   (require [selmer.parser :refer [render-file]]
-           [corollary.utils :as utils]
+           [corollary.utils :refer [db] :as utils]
            [clojure.java.jdbc :refer [query]]
-           [corollary.utils :refer [db]]
-           [cheshire.core :as cheshire]))
+           [cheshire.core :as cheshire]
+           [corollary.tree :as tree]))
 
 (defn date-string [date]
   (let [time-diff (- (utils/now) date)]
@@ -56,3 +56,6 @@
                       {:post-titles
                        (cheshire/generate-string (get-post-titles))})})
 
+(defn tree-page [{:keys [selected]}]
+  {:body (render-file "templates/tree.html"
+                      {:nodes (tree/draw-data-list selected)})})

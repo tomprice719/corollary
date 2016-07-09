@@ -45,7 +45,8 @@
                ("/recent" views/recent-posts)
                ("/selected" views/selected-post)
                ("/user/:name" set-name views/recent-posts)
-               ("/compose" views/compose-post))
+               ("/compose" views/compose-post)
+               ("/tree" views/tree-page))
              (POST
                ("/addpost" updates/create-post)))
 

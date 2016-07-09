@@ -1,0 +1,15 @@
+{% extends "templates/base_pills.html" %}
+
+{% block content %}
+<svg width="200" height="600" id="svgBox"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+  {% for node in nodes %}
+  <polyline points="{{node.arrow-points}}"
+            style="fill:none;stroke:red;stroke-width:2" />
+  <a xlink:href="foo.html" >
+    <text id="foo" x="{{node.x}}" y="{{node.y}}">{{node.title}}</text>
+  </a>
+  {% endfor %}
+</svg>
+{% endblock %}
+
