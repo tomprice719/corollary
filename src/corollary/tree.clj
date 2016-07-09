@@ -93,29 +93,30 @@
 
 ;(pprint (draw-data-list test-tree 1))
 
-(defn get-child-kvs [id depth]
+(defn get-child-kvs [parent-post-id parent-id depth]
   (query db ["select posts.id, posts.date, posts.title from posts join edges on posts.id = edges.child_id where edges.parent_id = ?"
-             (Integer. id)]
+             (Integer. parent-post-id)]
          {:row-fn #(vector (-> %
                                (select-keys [:id :title])
-                               (assoc :children [] :parent id))
+                               (assoc :children [] :parent parent-id))
                            [(inc depth) (- (:date %))])}))
 
 (defn get-nodes-recurse [chosen queue count]
   (if (or (zero? count) (empty? queue))
     chosen
-    (let [[{:keys [id parent] :as node} [depth _]] (peek queue)]
+    (let [[{:keys [id parent] :as node} [depth _]] (peek queue)
+          new-id (gensym)]
       (recur
         (-> chosen
-            (assoc id node)
+            (assoc new-id node)
             (update-in [parent :children]
-                       #(conj % id)))
-        (into (pop queue) (get-child-kvs id depth))
+                       #(conj % new-id)))
+        (into (pop queue) (get-child-kvs id new-id depth))
         (dec count)))))
 
-(defn get-nodes [root-id]
-  (get-nodes-recurse {root-id {:children [] :id root-id}}
-                     (into (priority-map) (get-child-kvs root-id 0))
+(defn get-nodes [root-post-id root-id]
+  (get-nodes-recurse {root-id {:children [] :id root-post-id}}
+                     (into (priority-map) (get-child-kvs root-post-id root-id 0))
                      10))
 
 (defn draw-data-list
@@ -124,6 +125,7 @@
          node-data-with-pos [(add-pos-data node-data init-pos parent)]]
      (draw-data (node-data-with-pos id))))
   ([root-id]
-   (draw-data-list (get-nodes root-id) root-id)))
+   (let [new-id (gensym)]
+     (draw-data-list (get-nodes root-id new-id) new-id))))
 
 ;;(draw-data-list 34)
