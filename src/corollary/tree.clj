@@ -11,18 +11,18 @@
 
 ;;TODO: encode node-data and last-pos in map rather than vector. Or in a record called "reduction"
 
-(def test-tree
-  (hash-map 1 {:children [2 3] :id 1}
-            2 {:children [4 5]  :id 2}
-            3 {:children [6 7]  :id 3}
-            4 {:children [8 9]  :id 4}
-            5 {:children [10 11]  :id 5}
-            6 {:children [] :id 6}
-            7 {:children []  :id 7}
-            8 {:children [] :id 8}
-            9 {:children []  :id 9}
-            10 {:children []  :id 10}
-            11 {:children []  :id 11}))
+;;(def test-tree
+;;  (hash-map 1 {:children [2 3] :id 1}
+;;            2 {:children [4 5]  :id 2}
+;;            3 {:children [6 7]  :id 3}
+;;            4 {:children [8 9]  :id 4}
+;;            5 {:children [10 11]  :id 5}
+;;            6 {:children [] :id 6}
+;;            7 {:children []  :id 7}
+;;            8 {:children [] :id 8}
+;;            9 {:children []  :id 9}
+;;            10 {:children []  :id 10}
+;;            11 {:children []  :id 11}))
 
 (defn reducer [[node-data last-pos] key]
   (let [new-node-data (add-pos-data node-data last-pos key)]
