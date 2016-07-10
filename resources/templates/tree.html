@@ -4,11 +4,22 @@
 <svg width="200" height="600" id="svgBox"
      xmlns:xlink="http://www.w3.org/1999/xlink">
   {% for node in nodes %}
+  {% if node.multi-post %}
+  {% for post in node.posts %}
+  <a xlink:href="foo.html" >
+    <text id="foo" x="{{node.x}}" y="{{post.y}}">{{post.title}}</text>
+  </a>
+  {% endfor %}
+  {% else %}
+  {% if node.has-arrow %}
   <polyline points="{{node.arrow-points}}"
             style="fill:none;stroke:red;stroke-width:2" />
+  {% endif %}
   <a xlink:href="foo.html" >
     <text id="foo" x="{{node.x}}" y="{{node.y}}">{{node.title}}</text>
   </a>
+  {% endif %}
+
   {% endfor %}
 </svg>
 {% endblock %}

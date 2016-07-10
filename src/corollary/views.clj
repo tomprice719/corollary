@@ -1,21 +1,14 @@
 (ns corollary.views
   (require [selmer.parser :refer [render-file]]
-           [corollary.utils :refer [db] :as utils]
-           [clojure.java.jdbc :refer [query]]
+           [corollary.queries :refer :all]
            [cheshire.core :as cheshire]
-           [corollary.tree :as tree]))
+           [corollary.tree :as tree]
+           [corollary.utils :refer [db] :as utils]
+           [clojure.java.jdbc :refer [query]]))
 
 (defn date-string [date]
   (let [time-diff (- (utils/now) date)]
     (str (quot time-diff 1000) " seconds ago")))
-
-(defn get-parents [id]
-  (query db ["select title, id from posts join edges on posts.id = edges.parent_id where edges.child_id = ?"
-             (Integer. id)]))
-
-(defn get-children [id]
-  (query db ["select title, id from posts join edges on posts.id = edges.child_id where edges.parent_id = ?"
-             (Integer. id)]))
 
 (defn get-post [id] ;;Get rid of having to call first
   (first
@@ -28,11 +21,6 @@
   (query db
          ["select title, author, date, id from posts"]
          {:row-fn #(update % :date date-string)}))
-
-(defn get-post-titles []
-  (query db
-         ["select title from posts"]
-         {:row-fn :title}))
 
 (defn recent-posts [params]
   {:body
