@@ -24,9 +24,9 @@
             10 {:children []  :id 10}
             11 {:children []  :id 11}))
 
-(defn reducer [[node-data last-pos] id]
-  (let [new-node-data (add-pos-data node-data last-pos id)]
-    [new-node-data (get-in new-node-data [id :pos])]))
+(defn reducer [[node-data last-pos] key]
+  (let [new-node-data (add-pos-data node-data last-pos key)]
+    [new-node-data (get-in new-node-data [key :pos])]))
 
 (defn new-pos [{last-text-row :text-row
                 last-bottom :bottom
@@ -43,13 +43,13 @@
               :bottom (+ bottom parent-size)
               :indent (+ indent 1))))
 
-(defn add-pos-data [node-data last-pos id]
+(defn add-pos-data [node-data last-pos key]
   (let
     [[new-node-data bottom-pos] (reduce reducer
-                                        [node-data (starting-pos last-pos (node-data id))]
-                                        (get-in node-data [id :children]))]
+                                        [node-data (starting-pos last-pos (node-data key))]
+                                        (get-in node-data [key :children]))]
     (assoc-in new-node-data
-              [id :pos]
+              [key :pos]
               (new-pos last-pos bottom-pos))))
 
 (def init-pos
@@ -59,45 +59,45 @@
 
 ;(pprint (draw-data-list test-tree 1))
 
-(defn get-child-kvs [parent-post-id parent-id depth]
+(defn get-child-kvs [parent-post-id parent-key depth]
   (query db ["select posts.id, posts.date, posts.title from posts join edges on posts.id = edges.child_id where edges.parent_id = ?"
              (Integer. parent-post-id)]
          {:row-fn (fn [{post-id :id title :title date :date}]
                     [{:post-id post-id
                       :title title
-                      :parent-id parent-id
+                      :parent-key parent-key
                       :children []}
                      [(inc depth) (- date)]])}))
 
 (defn add-has-more [node-data queue-seq]
   (if (empty? queue-seq) node-data
     (recur
-      (let [[{:keys [parent-id]} _] (first queue-seq)
-            has-more (get-in node-data [parent-id :has-more])
-            new-id (cons :more parent-id)
+      (let [[{:keys [parent-key]} _] (first queue-seq)
+            has-more (get-in node-data [parent-key :has-more])
+            new-key (cons :more parent-key)
             more-node {:more true
-                       :post-id (:post-id (node-data parent-id))
+                       :post-id (:post-id (node-data parent-key))
                        :children []}]
         (if has-more
           node-data
           (-> node-data
-              (update-in [parent-id :children]
-                         #(conj % new-id))
-              (assoc-in [parent-id :has-more] true)
-              (assoc new-id more-node))))
+              (update-in [parent-key :children]
+                         #(conj % new-key))
+              (assoc-in [parent-key :has-more] true)
+              (assoc new-key more-node))))
       (rest queue-seq))))
 
 (defn get-nodes-recurse [chosen queue count]
   (if (or (zero? count) (empty? queue))
     (add-has-more chosen (seq queue))
-    (let [[{:keys [post-id parent-id] :as node} [depth _]] (peek queue)
-          new-id (cons post-id parent-id)]
+    (let [[{:keys [post-id parent-key] :as node} [depth _]] (peek queue)
+          new-key (cons post-id parent-key)]
       (recur
         (-> chosen
-            (assoc new-id node)
-            (update-in [parent-id :children]
-                       #(conj % new-id)))
-        (into (pop queue) (get-child-kvs post-id new-id depth))
+            (assoc new-key node)
+            (update-in [parent-key :children]
+                       #(conj % new-key)))
+        (into (pop queue) (get-child-kvs post-id new-key depth))
         (dec count)))))
 
 (defn get-nodes [selected-post-id]
@@ -110,32 +110,32 @@
             #(get-in node-data [% :children])
             :top))
 
-(defn get-parent [node-data top-id]
-  (let [{:keys [post-id]} (node-data top-id)
+(defn make-parent [node-data top-key]
+  (let [{:keys [post-id]} (node-data top-key)
         parent-posts (queries/get-parents post-id)]
     (case (count parent-posts)
       0 nil
       1 (-> (first parent-posts)
             (rename-keys {:id :post-id})
-            (assoc :children [top-id]))
+            (assoc :children [top-key]))
       (hash-map :posts parent-posts
-                :children [top-id]
+                :children [top-key]
                 :multi-post true))))
 
-(defn finish [node-data top-id]
+(defn finish [node-data top-key]
   (-> node-data
-      (rename-keys {top-id :top})
+      (rename-keys {top-key :top})
       (assoc-in [:top :top] true)))
 
-(defn add-ancestors [node-data top-id]
-  (if-let [parent (get-parent node-data top-id)]
+(defn add-ancestors [node-data top-key]
+  (if-let [parent (make-parent node-data top-key)]
     (if (:multi-post parent)
       (assoc node-data :top parent)
       (let [key [(:post-id parent) :ancestor]]
         (if (contains? node-data key)
-          (finish node-data top-id)
+          (finish node-data top-key)
           (add-ancestors (assoc node-data key parent) key))))
-    (finish node-data top-id)))
+    (finish node-data top-key)))
 
 (def base-x 20)
 (def base-y 20)
