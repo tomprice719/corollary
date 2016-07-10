@@ -69,16 +69,27 @@
                       :children []}
                      [(inc depth) (- date)]])}))
 
-(defn add-has-more [chosen queue]
-  ((apply comp
-          (map (fn [{:keys [parent-id]}]
-                 #(assoc-in % [parent-id :has-more] true))
-               (seq queue)))
-   chosen))
+(defn add-has-more [node-data queue-seq]
+  (if (empty? queue-seq) node-data
+    (recur
+      (let [[{:keys [parent-id]} _] (first queue-seq)
+            has-more (get-in node-data [parent-id :has-more])
+            new-id (cons :more parent-id)
+            more-node {:more true
+                       :post-id (:post-id (node-data parent-id))
+                       :children []}]
+        (if has-more
+          node-data
+          (-> node-data
+              (update-in [parent-id :children]
+                         #(conj % new-id))
+              (assoc-in [parent-id :has-more] true)
+              (assoc new-id more-node))))
+      (rest queue-seq))))
 
 (defn get-nodes-recurse [chosen queue count]
   (if (or (zero? count) (empty? queue))
-    (add-has-more chosen queue)
+    (add-has-more chosen (seq queue))
     (let [[{:keys [post-id parent-id] :as node} [depth _]] (peek queue)
           new-id (cons post-id parent-id)]
       (recur
@@ -147,7 +158,7 @@
             right-x low-y)))
 
 ;;use defmulti / defmethod
-(defn draw-data [{{:keys [indent text-row] :as pos} :pos :keys [post-id multi-post posts top]}]
+(defn draw-data [{{:keys [indent text-row] :as pos} :pos :keys [post-id multi-post posts top more] :as node}]
   (if multi-post
     {:multi-post true
      :x (get-x indent)
@@ -162,7 +173,8 @@
      :arrow-points (apply
                      (partial format "%d,%d %d,%d %d,%d")
                      (arrow-points pos))
-     :title (str "Post id number " post-id)
+     :title (if more "More ..."
+              (str "Post id number " post-id))
      }))
 
 ;;TODO: make changes to add-pos-data, draw-data
@@ -172,7 +184,7 @@
                       get-nodes
                       (add-ancestors '())
                       (add-pos-data init-pos :top))]
-    (map (comp draw-data node-data) (node-list node-data))))
+    (map draw-data (vals node-data))))
 
 
 ;;(draw-data-list 34)
