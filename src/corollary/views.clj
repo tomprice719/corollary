@@ -6,6 +6,8 @@
            [corollary.utils :refer [db] :as utils]
            [clojure.java.jdbc :refer [query]]))
 
+(def posts-per-page 10)
+
 (defn date-string [date]
   (let [time-diff (- (utils/now) date)]
     (str (quot time-diff 1000) " seconds ago")))
@@ -17,18 +19,22 @@
             (Integer. id)]
            {:row-fn #(update % :date date-string)})))
 
-(defn get-posts []
+(defn get-posts [page-num]
   (query db
-         ["select title, author, date, id from posts"]
+         ["select title, author, date, id from posts order by date desc limit ? offset ?"
+          posts-per-page
+          (* page-num posts-per-page)]
          {:row-fn #(update % :date date-string)}))
 
 (defn recent-posts [params]
-  {:body
-   (render-file
-     "templates/recent_posts.html"
-     (merge params
-            {:posts (get-posts)
-             :page "recent"}))})
+  (let [page-num (if-let [pn-str (:page-num params)] (Integer. pn-str) 0)]
+    {:body
+     (render-file
+       "templates/recent_posts.html"
+       (merge params
+              {:page-num page-num
+               :posts (get-posts page-num)
+               :page "recent"}))}))
 
 (defn selected-post [{:keys [selected] :as params}]
   {:body
