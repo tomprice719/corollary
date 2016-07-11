@@ -44,6 +44,8 @@
                       {:post-titles
                        (cheshire/generate-string (get-post-titles))})})
 
-(defn tree-page [{:keys [selected]}]
+(defn tree-page [{:keys [selected] :as params}]
   {:body (render-file "templates/tree.html"
-                      {:nodes (tree/draw-data-list selected)})})
+                      (merge params
+                             { :page "tree"
+                               :nodes (tree/draw-data-list selected)}))})

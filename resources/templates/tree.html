@@ -6,7 +6,7 @@
   {% for node in nodes %}
   {% if node.multi-post %}
   {% for post in node.posts %}
-  <a xlink:href="foo.html" >
+  <a xlink:href="/tree?selected={{post.id}}" >
     <text id="foo" x="{{node.x}}" y="{{post.y}}">{{post.title}}</text>
   </a>
   {% endfor %}
@@ -15,7 +15,7 @@
   <polyline points="{{node.arrow-points}}"
             style="fill:none;stroke:red;stroke-width:2" />
   {% endif %}
-  <a xlink:href="foo.html" >
+  <a xlink:href="/tree?selected={{node.post-id}}" >
     <text id="foo" x="{{node.x}}" y="{{node.y}}">{{node.title}}</text>
   </a>
   {% endif %}

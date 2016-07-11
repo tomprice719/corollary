@@ -75,8 +75,8 @@
       (let [[{:keys [parent-key]} _] (first queue-seq)
             has-more (get-in node-data [parent-key :has-more])
             new-key (cons :more parent-key)
-            more-node {:more true
-                       :post-id (:post-id (node-data parent-key))
+            more-node {:post-id (:post-id (node-data parent-key))
+                       :title "More ..."
                        :children []}]
         (if has-more
           node-data
@@ -101,9 +101,12 @@
         (dec count)))))
 
 (defn get-nodes [selected-post-id]
-  (get-nodes-recurse {'() {:children [] :post-id selected-post-id :selected true}}
+  (get-nodes-recurse {'() {:children []
+                           :post-id selected-post-id
+                           :selected true
+                           :title (queries/get-one-title selected-post-id)}}
                      (into (priority-map) (get-child-kvs selected-post-id '() 0))
-                     5))
+                     10))
 
 (defn node-list [node-data]
   (tree-seq (constantly true)
@@ -140,7 +143,7 @@
 (def base-x 20)
 (def base-y 20)
 (def indent-width 20)
-(def text-height 30)
+(def text-height 25)
 
 (defn get-x [indent]
   (+ base-x (* indent indent-width)))
@@ -151,20 +154,19 @@
 (defn arrow-points [{:keys [text-row arrow-row indent]}]
   (let [right-x (- (get-x indent) 3)
         left-x (- right-x 10)
-        high-y (get-y arrow-row)
-        low-y (- (get-y text-row) 5)]
+        high-y (+ (get-y arrow-row) 3)
+        low-y (- (get-y text-row) 3)]
     (vector left-x high-y
             left-x low-y
             right-x low-y)))
 
 ;;use defmulti / defmethod
-(defn draw-data [{{:keys [indent text-row] :as pos} :pos :keys [post-id multi-post posts top more] :as node}]
+(defn draw-data [{{:keys [indent text-row] :as pos} :pos :keys [post-id multi-post posts top title] :as node}]
   (if multi-post
     {:multi-post true
      :x (get-x indent)
-     :posts (map (fn [{post-id :id} i]
-                   {:y (get-y (+ text-row i))
-                    :title (str "Post id number " post-id)})
+     :posts (map (fn [post i]
+                   (merge post {:y (get-y (+ text-row i))}))
                  posts
                  (range (count posts)))}
     {:x (get-x indent)
@@ -173,8 +175,8 @@
      :arrow-points (apply
                      (partial format "%d,%d %d,%d %d,%d")
                      (arrow-points pos))
-     :title (if more "More ..."
-              (str "Post id number " post-id))
+     :title title
+     :post-id post-id
      }))
 
 ;;TODO: make changes to add-pos-data, draw-data

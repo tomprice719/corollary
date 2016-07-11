@@ -15,11 +15,14 @@
       Selected Post
     </a>
   </li>
-  {% endif %}
 
-  <li>
-    <a href="#">Menu 2</a>
+  <li {% ifequal page "tree" %} class="active" {% endifequal %}
+      id = "tree-button">
+    <a href="/tree?selected={{selected}}">
+      Tree
+    </a>
   </li>
+  {% endif %}
 
   <li>
     <a href="#">Menu 3</a>

@@ -14,3 +14,9 @@
   (query db
          ["select title from posts"]
          {:row-fn :title}))
+
+(defn get-one-title [post-id]
+  (first (query db
+                ["select title from posts where id = ?"
+                 (Integer. post-id)]
+                {:row-fn :title})))
