@@ -1,16 +1,22 @@
 {% extends "templates/base_pills.html" %}
 
 {% block content %}
-<svg width="600" height="600" id="svgBox"
+<svg width="1200" height="1200" id="svgBox"
      xmlns:xlink="http://www.w3.org/1999/xlink">
   {% for node in nodes %}
   {% if node.multi-post %}
   {% for post in node.posts %}
   <a xlink:href="/tree?selected={{post.id}}" >
-    <text id="foo" x="{{node.x}}" y="{{post.y}}">{{post.title}}</text>
+    <text id="foo" x="{{node.x}}" y="{{post.y}}">Ancestor: {{post.title}}</text>
   </a>
   {% endfor %}
   {% else %}
+
+  {% if node.selected %}
+  <rect x="{{node.rect-x}}" y="{{node.rect-y}}" width="1200" height="{{node.rect-height}}"
+  style="fill:yellow;fill-opacity:0.5;" />
+  {% endif %}
+
   {% if node.has-arrow %}
   <polyline points="{{node.arrow-points}}"
             style="fill:none;stroke:red;stroke-width:2" />

@@ -104,6 +104,7 @@
   (get-nodes-recurse {'() {:children []
                            :post-id selected-post-id
                            :selected true
+                           :prefix "Selected: "
                            :title (queries/get-one-title selected-post-id)}}
                      (into (priority-map) (get-child-kvs selected-post-id '() 0))
                      10))
@@ -120,7 +121,7 @@
       0 nil
       1 (-> (first parent-posts)
             (rename-keys {:id :post-id})
-            (assoc :children [top-key]))
+            (assoc :children [top-key] :prefix "Ancestor: "))
       (hash-map :posts parent-posts
                 :children [top-key]
                 :multi-post true))))
@@ -161,7 +162,7 @@
             right-x low-y)))
 
 ;;use defmulti / defmethod
-(defn draw-data [{{:keys [indent text-row] :as pos} :pos :keys [post-id multi-post posts top title] :as node}]
+(defn draw-data [{{:keys [indent text-row] :as pos} :pos :keys [post-id multi-post posts top title prefix selected] :as node}]
   (if multi-post
     {:multi-post true
      :x (get-x indent)
@@ -175,8 +176,12 @@
      :arrow-points (apply
                      (partial format "%d,%d %d,%d %d,%d")
                      (arrow-points pos))
-     :title title
+     :title (str prefix title)
      :post-id post-id
+     :selected selected
+     :rect-y (- (get-y text-row) 15)
+     :rect-height 19
+     :rect-x (- (get-x indent) 3)
      }))
 
 ;;TODO: make changes to add-pos-data, draw-data
