@@ -12,14 +12,14 @@
   {% endfor %}
   {% else %}
 
-  {% if node.selected %}
+  {% ifequal node.node-type "selected" %}
   <rect x="{{node.rect-x}}" y="{{node.rect-y}}" width="1200" height="{{node.rect-height}}"
-  style="fill:yellow;fill-opacity:0.5;" />
-  {% endif %}
+        style="fill:yellow;fill-opacity:0.5;" />
+  {% endifequal %}
 
-  {% if node.has-arrow %}
+  {% if node.arrow-points %}
   <polyline points="{{node.arrow-points}}"
-            style="fill:none;stroke:red;stroke-width:2" />
+            style="fill:none;stroke:{{node.edge-colour}};stroke-width:2" />
   {% endif %}
   <a xlink:href="/tree?selected={{node.post-id}}" >
     <text id="foo" x="{{node.x}}" y="{{node.y}}">{{node.title}}</text>

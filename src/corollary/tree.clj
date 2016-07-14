@@ -5,7 +5,8 @@
             [clojure.data.priority-map :refer :all]
             [clojure.java.jdbc :refer [query]]
             [corollary.queries :as queries]
-            [corollary.utils :refer [db thrush]])) ;;maybe you just need priority-map
+            [corollary.utils :refer [db thrush]]
+            [corollary.edges :refer [get-edge-colour]])) ;;maybe you just need priority-map
 
 (declare add-pos-data)
 
@@ -23,6 +24,8 @@
 ;;            9 {:children []  :id 9}
 ;;            10 {:children []  :id 10}
 ;;            11 {:children []  :id 11}))
+
+;;Code problem: it's annoying to find the different places that nodes are created
 
 (defn reducer [[node-data last-pos] key]
   (let [new-node-data (add-pos-data node-data last-pos key)]
@@ -57,16 +60,16 @@
             :bottom 0
             :indent 0))
 
-;(pprint (draw-data-list test-tree 1))
-
 (defn get-child-kvs [parent-post-id parent-key depth]
-  (query db ["select posts.id, posts.date, posts.title from posts join edges on posts.id = edges.child_id where edges.parent_id = ?"
+  (query db ["select posts.id, posts.date, posts.title, edges.type from posts join edges on posts.id = edges.child_id where edges.parent_id = ?"
              (Integer. parent-post-id)]
-         {:row-fn (fn [{post-id :id title :title date :date}]
+         {:row-fn (fn [{post-id :id title :title date :date edge-type :type}]
                     [{:post-id post-id
                       :title title
+                      :node-type "descendant"
                       :parent-key parent-key
-                      :children []}
+                      :children []
+                      :edge-type edge-type}
                      [(inc depth) (- date)]])}))
 
 (defn add-has-more [node-data queue-seq]
@@ -77,7 +80,9 @@
             new-key (cons :more parent-key)
             more-node {:post-id (:post-id (node-data parent-key))
                        :title "More ..."
-                       :children []}]
+                       :children []
+                       :node-type "descendant"
+                       :edge-type "other"}]
         (if has-more
           node-data
           (-> node-data
@@ -103,7 +108,7 @@
 (defn get-nodes [selected-post-id]
   (get-nodes-recurse {'() {:children []
                            :post-id selected-post-id
-                           :selected true
+                           :node-type "selected"
                            :prefix "Selected: "
                            :title (queries/get-one-title selected-post-id)}}
                      (into (priority-map) (get-child-kvs selected-post-id '() 0))
@@ -120,8 +125,8 @@
     (case (count parent-posts)
       0 nil
       1 (-> (first parent-posts)
-            (rename-keys {:id :post-id})
-            (assoc :children [top-key] :prefix "Ancestor: "))
+            (rename-keys {:id :post-id :type :edge-type})
+            (assoc :children [top-key] :prefix "Ancestor: " :node-type "ancestor"))
       (hash-map :posts parent-posts
                 :children [top-key]
                 :multi-post true))))
@@ -152,17 +157,25 @@
 (defn get-y [row]
   (+ base-y (* row text-height)))
 
-(defn arrow-points [{:keys [text-row arrow-row indent]}]
-  (let [right-x (- (get-x indent) 3)
-        left-x (- right-x 10)
-        high-y (+ (get-y arrow-row) 3)
-        low-y (- (get-y text-row) 3)]
-    (vector left-x high-y
-            left-x low-y
-            right-x low-y)))
+(defn arrow-points [{:keys [text-row arrow-row indent]} node-type]
+  (case node-type
+    "descendant" (let [right-x (- (get-x indent) 3)
+                       left-x (- right-x 10)
+                       high-y (+ (get-y arrow-row) 3)
+                       low-y (- (get-y text-row) 3)]
+                   (vector left-x high-y
+                           left-x low-y
+                           right-x low-y))
+    "ancestor" (let [right-x (- (get-x (+ indent 1)) 3)
+                     left-x (- right-x 10)
+                     high-y (+ (get-y text-row) 3)
+                     low-y (- (get-y (+ text-row 1)) 3)]
+                 (vector left-x high-y
+                         left-x low-y
+                         right-x low-y))))
 
 ;;use defmulti / defmethod
-(defn draw-data [{{:keys [indent text-row] :as pos} :pos :keys [post-id multi-post posts top title prefix selected] :as node}]
+(defn draw-data [{{:keys [indent text-row] :as pos} :pos :keys [post-id multi-post posts top title prefix selected node-type edge-type] :as node}]
   (if multi-post
     {:multi-post true
      :x (get-x indent)
@@ -172,16 +185,17 @@
                  (range (count posts)))}
     {:x (get-x indent)
      :y (get-y text-row)
-     :has-arrow (not top)
-     :arrow-points (apply
-                     (partial format "%d,%d %d,%d %d,%d")
-                     (arrow-points pos))
+     :arrow-points (if-not (= node-type "selected")
+                     (apply
+                       (partial format "%d,%d %d,%d %d,%d")
+                       (arrow-points pos node-type)))
      :title (str prefix title)
      :post-id post-id
-     :selected selected
+     :node-type node-type
      :rect-y (- (get-y text-row) 15)
      :rect-height 19
      :rect-x (- (get-x indent) 3)
+     :edge-colour (get-edge-colour edge-type)
      }))
 
 ;;TODO: make changes to add-pos-data, draw-data
