@@ -9,8 +9,25 @@
 (def posts-per-page 10)
 
 (defn date-string [date]
-  (let [time-diff (- (utils/now) date)]
-    (str (quot time-diff 1000) " seconds ago")))
+  (let [seconds-diff (quot (- (utils/now) date) 1000)
+        minute 60
+        two-minutes (* minute 2)
+        hour (* minute 60)
+        two-hours (* hour 2)
+        day (* hour 24)
+        two-days (* day 2)
+        week (* day 7)
+        two-weeks (* week 2)]
+    (condp > seconds-diff
+      minute (str seconds-diff " seconds ago")
+      two-minutes "1 minute ago"
+      hour (str (quot seconds-diff 60) " minutes ago")
+      two-hours "1 hour ago"
+      day (str (quot seconds-diff 3600) " hours ago")
+      two-days "1 day ago"
+      week (str (quot seconds-diff 86400) " days ago")
+      two-weeks "1 week ago"
+      (str (quot seconds-diff 604800) " weeks ago"))))
 
 (defn get-post [id] ;;Get rid of having to call first
   (first
