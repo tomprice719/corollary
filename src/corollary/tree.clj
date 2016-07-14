@@ -10,22 +10,10 @@
 
 (declare add-pos-data)
 
-;;TODO: encode node-data and last-pos in map rather than vector. Or in a record called "reduction"
-
-;;(def test-tree
-;;  (hash-map 1 {:children [2 3] :id 1}
-;;            2 {:children [4 5]  :id 2}
-;;            3 {:children [6 7]  :id 3}
-;;            4 {:children [8 9]  :id 4}
-;;            5 {:children [10 11]  :id 5}
-;;            6 {:children [] :id 6}
-;;            7 {:children []  :id 7}
-;;            8 {:children [] :id 8}
-;;            9 {:children []  :id 9}
-;;            10 {:children []  :id 10}
-;;            11 {:children []  :id 11}))
-
 ;;Code problem: it's annoying to find the different places that nodes are created
+;;This mess seriously need refactoring
+;;TODO: make different "classes" for each node type.
+;;Also, instead of merging post properties with node properties, give each node a corresponding post
 
 (defn reducer [[node-data last-pos] key]
   (let [new-node-data (add-pos-data node-data last-pos key)]
@@ -40,8 +28,8 @@
             :bottom bottom-bottom
             :indent last-indent))
 
-(defn starting-pos [{:keys [bottom indent]} {:keys [multi-post posts]}]
-  (let [parent-size (if multi-post (count posts) 1)]
+(defn starting-pos [{:keys [bottom indent]} {:keys [node-type posts]}]
+  (let [parent-size (if (= node-type "multipost") (count posts) 1)]
     (hash-map :text-row (+ bottom parent-size)
               :bottom (+ bottom parent-size)
               :indent (+ indent 1))))
@@ -61,16 +49,12 @@
             :indent 0))
 
 (defn get-child-kvs [parent-post-id parent-key depth]
-  (query db ["select posts.id, posts.date, posts.title, edges.type from posts join edges on posts.id = edges.child_id where edges.parent_id = ?"
-             (Integer. parent-post-id)]
-         {:row-fn (fn [{post-id :id title :title date :date edge-type :type}]
-                    [{:post-id post-id
-                      :title title
-                      :node-type "descendant"
-                      :parent-key parent-key
-                      :children []
-                      :edge-type edge-type}
-                     [(inc depth) (- date)]])}))
+  (queries/get-children parent-post-id
+                        #(vector
+                           (-> %
+                               (rename-keys {:id :post-id})
+                               (assoc :node-type "descendant" :children [] :parent-key parent-key))
+                           [(inc depth) (- (:date %))])))
 
 (defn add-has-more [node-data queue-seq]
   (if (empty? queue-seq) node-data
@@ -121,15 +105,15 @@
 
 (defn make-parent [node-data top-key]
   (let [{:keys [post-id]} (node-data top-key)
-        parent-posts (queries/get-parents post-id)]
+        parent-posts (queries/get-parents post-id identity)]
     (case (count parent-posts)
       0 nil
       1 (-> (first parent-posts)
-            (rename-keys {:id :post-id :type :edge-type})
+            (rename-keys {:id :post-id})
             (assoc :children [top-key] :prefix "Ancestor: " :node-type "ancestor"))
       (hash-map :posts parent-posts
                 :children [top-key]
-                :multi-post true))))
+                :node-type "multipost"))))
 
 (defn finish [node-data top-key]
   (-> node-data
@@ -138,7 +122,7 @@
 
 (defn add-ancestors [node-data top-key]
   (if-let [parent (make-parent node-data top-key)]
-    (if (:multi-post parent)
+    (if (= (:node-type parent) "multipost")
       (assoc node-data :top parent)
       (let [key [(:post-id parent) :ancestor]]
         (if (contains? node-data key)
@@ -175,9 +159,9 @@
                          right-x low-y))))
 
 ;;use defmulti / defmethod
-(defn draw-data [{{:keys [indent text-row] :as pos} :pos :keys [post-id multi-post posts top title prefix selected node-type edge-type] :as node}]
-  (if multi-post
-    {:multi-post true
+(defn draw-data [{{:keys [indent text-row] :as pos} :pos :keys [post-id posts top title prefix selected node-type edge-type] :as node}]
+  (if (= node-type "multipost")
+    {:multipost true
      :x (get-x indent)
      :posts (map (fn [post i]
                    (merge post {:y (get-y (+ text-row i))}))

@@ -16,6 +16,7 @@
     <p>Children:</p>
     {% for child in children %}
     <p>
+      <span style="color:{{child.edge-colour}}">({{child.edge-type}})</span>
       <a href="/selected?selected={{child.id}}">{{child.title}}</a>
     </p>
     {% endfor %}

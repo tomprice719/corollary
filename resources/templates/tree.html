@@ -4,7 +4,7 @@
 <svg width="1200" height="1200" id="svgBox"
      xmlns:xlink="http://www.w3.org/1999/xlink">
   {% for node in nodes %}
-  {% if node.multi-post %}
+  {% if node.multipost %}
   {% for post in node.posts %}
   <a xlink:href="/tree?selected={{post.id}}" >
     <text id="foo" x="{{node.x}}" y="{{post.y}}">Ancestor: {{post.title}}</text>

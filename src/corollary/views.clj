@@ -4,7 +4,8 @@
            [cheshire.core :as cheshire]
            [corollary.tree :as tree]
            [corollary.utils :refer [db] :as utils]
-           [clojure.java.jdbc :refer [query]]))
+           [clojure.java.jdbc :refer [query]]
+           [corollary.edges :refer [get-edge-colour]]))
 
 (def posts-per-page 10)
 
@@ -53,14 +54,17 @@
                :posts (get-posts page-num)
                :page "recent"}))}))
 
+(defn add-edge-colour [{:keys [edge-type] :as post}]
+  (assoc post :edge-colour (get-edge-colour edge-type)))
+
 (defn selected-post [{:keys [selected] :as params}]
   {:body
    (render-file "templates/selected_post.html"
                 (merge params
                        {:post (get-post selected)
                         :page "selected"
-                        :parents (get-parents selected)
-                        :children (get-children selected)}))})
+                        :parents (get-parents selected add-edge-colour)
+                        :children (get-children selected add-edge-colour)}))})
 
 (defn compose-post [params]
   {:body (render-file "templates/compose_post.html"
