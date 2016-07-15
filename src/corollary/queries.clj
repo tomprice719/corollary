@@ -13,10 +13,11 @@
              (Integer. id)]
          {:row-fn (comp row-fn #(rename-keys % {:edge_type :edge-type}))}))
 
-(defn get-post-titles []
-  (query db
-         ["select title from posts"]
-         {:row-fn :title}))
+(defn get-title-map []
+  (reduce (fn [reduction {:keys [title id]}] (assoc reduction title id))
+          {}
+          (query db
+                 ["select title, id from posts"])))
 
 (defn get-one-title [post-id]
   (first (query db

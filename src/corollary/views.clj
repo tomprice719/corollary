@@ -68,8 +68,8 @@
 
 (defn compose-post [params]
   {:body (render-file "templates/compose_post.html"
-                      {:post-titles
-                       (cheshire/generate-string (get-post-titles))})})
+                      {:title-map
+                       (cheshire/generate-string (get-title-map))})})
 
 (defn tree-page [{:keys [selected] :as params}]
   {:body (render-file "templates/tree.html"

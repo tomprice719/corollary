@@ -5,6 +5,8 @@
            [selmer.parser]
            [environ.core :refer [env]]))
 
+;;TODO: make sure you have correct "for" attributes in HTML forms
+
 (def migratus-config {:store                :database
                       :migration-dir        "migrations/"
                       :migration-table-name "migrations"

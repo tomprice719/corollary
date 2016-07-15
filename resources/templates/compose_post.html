@@ -7,14 +7,17 @@
 
 <form id = "form" action="/addpost" method="post">
   <fieldset class="form-group">
-    <label for="exampleInputEmail1">Title</label>
+    <label>Title</label>
     <input type="text" name="title" class="form-control" placeholder="Enter title">
   </fieldset>
   <fieldset class="form-group">
-    <label for="exampleTextarea">Content</label>
+    <label>Content</label>
     <textarea class="form-control" name="content" rows="3" placeholder = "Enter content"></textarea>
     <small class="text-muted">This is where you put the content</small>
   </fieldset>
+  <div class="clearfix">
+    <button id="hyperlink-open" type="button" class="pull-right btn btn-primary btn-md" data-toggle="modal" data-target="#addHyperlinkModal">Insert Hyperlink</button>
+  </div>
   <div class = "row form-group">
     <div class="col-sm-6">
       <h3>
@@ -87,6 +90,55 @@
 
   </div>
 </div>
+
+<!-- Modal -->
+<div id="addHyperlinkModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content 1-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Add Hyperlink</h4>
+      </div>
+
+      <div class="modal-body part1">
+        <h3>
+          Link to another post
+        </h3>
+        <fieldset class="form-group">
+          <label>Post to link to</label>
+          <div id = "hyperlink-post-title">
+            <input id="hyperlink-post-title-input" class="typeahead form-control" />
+          </div>
+        </fieldset>
+        <fieldset class="form-group">
+          <label>Link label</label>
+          <input type="text" id="hyperlink-label-input" class="form-control">
+        </fieldset>
+        <div class="clearfix">
+          <button id="hyperlink-next" type="button" class="pull-right btn btn-default">Next</button>
+        </div>
+        <h3>
+          Link to an external page
+        </h3>
+        Just use the syntax (TODO)
+      </div>
+
+      <div class="modal-body part2 hidden">
+        <p>
+          Copy and paste this snippet to wherever you want to insert the link in your post:
+        </p>
+        <input type="text" id="hyperlink-snippet" class="form-control">
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
@@ -95,6 +147,8 @@
 <script src='backbone.js'></script>
 
 <script language = "javascript">
+
+  titleMap = {{title-map|safe}};
 
   ParentChildView = Backbone.View.extend({
     tagName: 'li',
@@ -144,6 +198,30 @@
     $('#new-child-title-input').val('');
   });
 
+  $("#hyperlink-next").click(function(){
+    // add link text
+    label = $('#hyperlink-label-input').val()
+    title = $('#hyperlink-post-title-input').val();
+    if(!(title in titleMap)) {
+      alert('Oops, there is no post with the title "' + title + '"!');
+      return;
+    }
+    postId = titleMap[title];
+    $('#hyperlink-snippet').val('[' + label + '](/selected?selected=' + postId + ')');
+    // switch views
+    $('#addHyperlinkModal .part1').addClass('hidden')
+    $('#addHyperlinkModal .part2').removeClass('hidden')
+    // erase inputs
+    $('#hyperlink-post-title-input').val('');
+    $('#hyperlink-label-input').val('');
+  });
+
+  $("#hyperlink-open").click(function(){
+    // switch views
+    $('#addHyperlinkModal .part1').removeClass('hidden')
+    $('#addHyperlinkModal .part2').addClass('hidden')
+  });
+
   function addFormData(name, collection) {
     $('<input />', {
       "type":"hidden",
@@ -162,7 +240,7 @@
   var bh = new Bloodhound({
     datumTokenizer: Bloodhound.tokenizers.whitespace,
     queryTokenizer: Bloodhound.tokenizers.whitespace,
-    local: {{post-titles|safe}}
+    local: Object.keys(titleMap)
                           });
 
   $('#new-parent-title .typeahead').typeahead({
@@ -171,7 +249,7 @@
     minLength: 1
   },
                                               {
-    name: 'states',
+    name: 'new-parent',
     source: bh
   });
 
@@ -181,7 +259,17 @@
     minLength: 1
   },
                                              {
-    name: 'states',
+    name: 'new-child',
+    source: bh
+  });
+
+  $('#hyperlink-post-title .typeahead').typeahead({
+    hint: true,
+    highlight: true,
+    minLength: 1
+  },
+                                               {
+    name: 'new-child',
     source: bh
   });
 

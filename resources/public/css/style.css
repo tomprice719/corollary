@@ -63,3 +63,5 @@ body {
 .tt-suggestion p {
   margin: 0;
 }
+
+.twitter-typeahead, .tt-hint, .tt-input, .tt-menu { width: 100%; }
