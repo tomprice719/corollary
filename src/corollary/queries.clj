@@ -24,3 +24,8 @@
                 ["select title from posts where id = ?"
                  (Integer. post-id)]
                 {:row-fn :title})))
+
+(defn get-edge-types []
+  (query db
+         ["select type from edges group by type"]
+         {:row-fn :type}))

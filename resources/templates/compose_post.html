@@ -56,6 +56,10 @@
         <div id = "new-parent-title">
           <input id="new-parent-title-input" class="typeahead form-control" />
         </div>
+        <p>Enter the link type from the parent post to this post.</p>
+        <div id = "new-parent-link-type">
+          <input id="new-parent-link-type-input" class="typeahead form-control" />
+        </div>
       </div>
       <div class="modal-footer">
         <button id="add-parent" type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
@@ -80,6 +84,10 @@
         <p>Enter the title of the post you would like to add as a child.</p>
         <div id = "new-child-title">
           <input id="new-child-title-input" class="typeahead form-control" />
+        </div>
+        <p>Enter the link type from this post to the child post.</p>
+        <div id = "new-child-link-type">
+          <input id="new-child-link-type-input" class="typeahead form-control" />
         </div>
       </div>
       <div class="modal-footer">
@@ -149,6 +157,7 @@
 <script language = "javascript">
 
   titleMap = {{title-map|safe}};
+  linkTypes = {{link-types|safe}}
 
   ParentChildView = Backbone.View.extend({
     tagName: 'li',
@@ -172,16 +181,16 @@
   parentList = new Backbone.Collection();
   childList = new Backbone.Collection();
 
-  function addParent(title) {
-    var model = new Backbone.Model({title: title});
+  function addParent(title, linkType) {
+    var model = new Backbone.Model({title: title, id: titleMap[title], linkType: linkType});
     parentList.add(model);
     var view = new ParentChildView({model: model,
                                     className: "list-group-item"});
     $('#parents').prepend(view.render().el);
   }
 
-  function addChild(title) {
-    var model = new Backbone.Model({title: title});
+  function addChild(title, linkType) {
+    var model = new Backbone.Model({title: title, id: titleMap[title], linkType: linkType});
     childList.add(model);
     var view = new ParentChildView({model: model,
                                     className: "list-group-item"});
@@ -189,12 +198,12 @@
   }
 
   $("#add-parent").click(function(){
-    addParent($('#new-parent-title-input').val());
+    addParent($('#new-parent-title-input').val(), $('#new-parent-link-type-input').val());
     $('#new-parent-title-input').val('')
   });
 
   $("#add-child").click(function(){
-    addChild($('#new-child-title-input').val())
+    addChild($('#new-child-title-input').val(), $('#new-child-link-type-input').val())
     $('#new-child-title-input').val('');
   });
 
@@ -236,12 +245,12 @@
     return true;
   });
 
-  // constructs the suggestion engine
-  var bh = new Bloodhound({
+  // constructs the suggestion engine for titles
+  var titleBH = new Bloodhound({
     datumTokenizer: Bloodhound.tokenizers.whitespace,
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     local: Object.keys(titleMap)
-                          });
+  });
 
   $('#new-parent-title .typeahead').typeahead({
     hint: true,
@@ -249,8 +258,8 @@
     minLength: 1
   },
                                               {
-    name: 'new-parent',
-    source: bh
+    name: 'new-parent-title',
+    source: titleBH
   });
 
   $('#new-child-title .typeahead').typeahead({
@@ -259,8 +268,8 @@
     minLength: 1
   },
                                              {
-    name: 'new-child',
-    source: bh
+    name: 'new-child-title',
+    source: titleBH
   });
 
   $('#hyperlink-post-title .typeahead').typeahead({
@@ -269,9 +278,37 @@
     minLength: 1
   },
                                                {
-    name: 'new-child',
-    source: bh
+    name: 'new-hyperlink-post-title',
+    source: titleBH
   });
+
+  // constructs the suggestion engine for link types
+  var linkTypeBH = new Bloodhound({
+    datumTokenizer: Bloodhound.tokenizers.whitespace,
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    local: linkTypes
+  });
+
+  $('#new-parent-link-type .typeahead').typeahead({
+    hint: true,
+    highlight: true,
+    minLength: 1
+  },
+                                                  {
+    name: 'new-parent-link-type',
+    source: linkTypeBH
+  });
+
+  $('#new-child-link-type .typeahead').typeahead({
+    hint: true,
+    highlight: true,
+    minLength: 1
+  },
+                                                 {
+    name: 'new-child-link-type',
+    source: linkTypeBH
+  });
+
 
 </script>
 {% endblock %}
