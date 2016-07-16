@@ -6,7 +6,7 @@
            [clojure.pprint :refer [pprint]]
            [sqlingvo.db]
            [sqlingvo.core :as sql]
-           [corollary.queries :refer [pandoc]]
+           [corollary.queries :refer [pandoc get-parents]]
            [clojure.pprint :refer [pprint]]))
 
 ;(defn local-pandoc [input]
@@ -29,14 +29,14 @@
        (map (fn [{edge-type "linkType" parent-id "id"}]
               {:type edge-type
                :parent_id parent-id
-               :child_id id}))
+               :child_id (Integer. id)}))
        (add-edges)))
 
 (defn add-children [children id]
   (->> children cheshire/parse-string
        (map (fn [{edge-type "linkType" child-id "id"}]
               {:type edge-type
-               :parent_id id
+               :parent_id (Integer. id)
                :child_id child-id}))
        (add-edges)))
 
@@ -67,7 +67,16 @@
                 ["id = ?" (Integer. id)])
   (delete-parents id)
   (delete-children id)
-  (add-parents parents (Integer. id))
-  (add-children children (Integer. id))
+  (add-parents parents id)
+  (add-children children id)
   (redirect (str "/selected?selected=" id) :see-other))
+
+(defn delete-post [{:keys [id]}]
+  (let [parents (get-parents id identity)]
+    (delete-parents id)
+    (delete-children id)
+    (jdbc/delete! db :posts ["id = ?" (Integer. id)])
+    (if (empty? parents)
+      (redirect "/recent":see-other)
+      (redirect (str "/selected?selected=" (:id (first parents))) :see-other))))
 

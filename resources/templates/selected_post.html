@@ -1,10 +1,13 @@
 {% extends "templates/base_pills.html" %}
 
 {% block content %}
+
+{% if post %}
 <div class = "row">
   <div class = "col-sm-8">
     <h2>{{post.title}}</h2>
     <a href ="/edit?selected={{selected}}">edit</a>
+    <a href="#confirm-delete" data-toggle="modal">delete</a>
     <p>{{post.processed_content|safe}}</p>
   </div>
   <div class = "col-sm-4">
@@ -24,4 +27,31 @@
   </div>
 
 </div>
+
+<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        Confirm deletion
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete the post "{{post.title}}"?
+      </div>
+      <div class="modal-footer">
+        <form action="/delete-post" method="post">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <input type="hidden" name="id" value="{{selected}}" />
+          <input class="btn btn-danger btn-ok" type="submit" value="Delete"/>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% else %}
+
+<h1>
+  Post Not Found
+</h1>
+
+{% endif %}
 {% endblock %}

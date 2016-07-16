@@ -52,6 +52,7 @@
              (POST
                ("/add-post" updates/create-post)
                ("/update-post" updates/update-post)
+               ("/delete-post" updates/delete-post)
                ("/preview-html" ajax/get-preview-html)))
 
 (def mysite
