@@ -12,11 +12,15 @@
   </fieldset>
   <fieldset class="form-group">
     <label>Content</label>
-    <textarea class="form-control" name="content" rows="3" placeholder = "Enter content"></textarea>
+    <textarea id="content-area" class="form-control" name="content" rows="3" placeholder = "Enter content"></textarea>
     <small class="text-muted">This is where you put the content</small>
   </fieldset>
   <div class="clearfix">
-    <button id="hyperlink-open" type="button" class="pull-right btn btn-primary btn-md" data-toggle="modal" data-target="#addHyperlinkModal">Insert Hyperlink</button>
+    <div class="pull-right">
+      <button id="preview-all-button" type="button" class="btn btn-primary btn-md" data-toggle="modal">Preview All</button>
+      <button id="preview-selection-button" type="button" class="btn btn-primary btn-md" data-toggle="modal">Preview Selection</button>
+      <button id="hyperlink-open" type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#addHyperlinkModal">Insert Hyperlink</button>
+    </div>
   </div>
   <div class = "row form-group">
     <div class="col-sm-6">
@@ -147,6 +151,26 @@
 
   </div>
 </div>
+
+<!-- Modal -->
+<div id="previewModal" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-lg">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Preview</h4>
+      </div>
+      <div id = "previewBody" class="modal-body">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
@@ -180,6 +204,17 @@
 
   parentList = new Backbone.Collection();
   childList = new Backbone.Collection();
+
+  function getSelectionText() {
+    // obtain the object reference for the <textarea>
+    var txtarea = document.getElementById("content-area");
+    // obtain the index of the first selected character
+    var start = txtarea.selectionStart;
+    // obtain the index of the last selected character
+    var finish = txtarea.selectionEnd;
+    // obtain the selected text
+    return txtarea.value.substring(start, finish);
+  }
 
   function addParent(title, linkType) {
     var model = new Backbone.Model({title: title, id: titleMap[title], linkType: linkType});
@@ -229,6 +264,23 @@
     // switch views
     $('#addHyperlinkModal .part1').removeClass('hidden')
     $('#addHyperlinkModal .part2').addClass('hidden')
+  });
+
+  $("#preview-selection-button").click(function(){
+    $.post("/preview-html", {selection: getSelectionText()}, function(data) {
+      $("#previewBody").html(data);
+      console.log(data);
+      MathJax.Hub.Queue(["Typeset",MathJax.Hub,"previewBody"]);
+      $("#previewModal").modal();
+    }, "html");
+  });
+
+  $("#preview-all-button").click(function(){
+    $.post("/preview-html", {selection: $("#content-area").val()}, function(data) {
+      $("#previewBody").html(data);
+      MathJax.Hub.Queue(["Typeset",MathJax.Hub,"previewBody"]);
+      $("#previewModal").modal();
+    }, "html");
   });
 
   function addFormData(name, collection) {
@@ -308,6 +360,8 @@
     name: 'new-child-link-type',
     source: linkTypeBH
   });
+
+
 
 
 </script>

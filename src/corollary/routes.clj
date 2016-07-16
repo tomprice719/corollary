@@ -7,7 +7,8 @@
             [clojure.core :refer [rand-int]]
             [ring.middleware.session.cookie :refer [cookie-store]]
             [environ.core :refer [env]]
-            [clojure.pprint :refer [pprint]]))
+            [clojure.pprint :refer [pprint]]
+            [corollary.ajax :as ajax]))
 
 ;;Is compojure even doing anything for you?
 
@@ -48,7 +49,8 @@
                ("/compose" views/compose-post)
                ("/tree" views/tree-page))
              (POST
-               ("/addpost" updates/create-post)))
+               ("/addpost" updates/create-post)
+               ("/preview-html" ajax/get-preview-html)))
 
 (def mysite
   (site #'app

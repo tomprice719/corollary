@@ -1,22 +1,17 @@
 (ns corollary.updates
   (require [clojure.java.jdbc :as jdbc]
            [corollary.utils :as utils :refer [db]]
-           [clj-http.client :as client]
            [ring.util.response :refer [redirect]]
            [cheshire.core :as cheshire]
            [clojure.pprint :refer [pprint]]
            [sqlingvo.db]
            [sqlingvo.core :as sql]
-           [environ.core :refer [env]]))
+           [corollary.queries :refer [pandoc]]))
 
 ;(defn local-pandoc [input]
 ;  (:out (clojure.java.shell/sh "pandoc" "-f" "markdown-raw_html" "--mathjax" :in input))) ;; you MUST escape raw HTML
 
 (def pg (sqlingvo.db/postgresql))
-
-(defn pandoc [input]
-  (:body (client/post (env :pandoc-url)
-                      {:body input})))
 
 (defn next-post-id []
   (-> (jdbc/query db ["SELECT nextval('posts_id_seq')"]) first :nextval))
