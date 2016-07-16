@@ -1,18 +1,19 @@
 {% extends "templates/base.html" %}
 
 {% block content %}
+
 <h1>
   Compose post
 </h1>
 
-<form id = "form" action="/addpost" method="post">
+<form id = "form" action="{{form-action}}" method="post">
   <fieldset class="form-group">
     <label>Title</label>
-    <input type="text" name="title" class="form-control" placeholder="Enter title">
+    <input type="text" name="title" class="form-control" placeholder="Enter title" value = "{{title}}">
   </fieldset>
   <fieldset class="form-group">
     <label>Content</label>
-    <textarea id="content-area" class="form-control" name="content" rows="3" placeholder = "Enter content"></textarea>
+    <textarea id="content-area" class="form-control" name="content" rows="3" placeholder = "Enter content">{{content}}</textarea>
     <small class="text-muted">This is where you put the content</small>
   </fieldset>
   <div class="clearfix">
@@ -40,7 +41,9 @@
       </ul>
     </div>
   </div>
-  <!-- Trigger the modal with a button -->
+
+  <!-- Hidden input to include id of post, for editing an existing post -->
+  <input type="hidden" name="id" value="{{id}}" />
 
   <button type="submit" class="btn btn-primary btn-lg pull-right">Submit</button>
 </form>
@@ -198,7 +201,7 @@
     },
     destroy: function(){
       this.remove();
-      this.model.destroy();
+      this.collection.remove(this.model);
     }
   });
 
@@ -219,7 +222,8 @@
   function addParent(title, linkType) {
     var model = new Backbone.Model({title: title, id: titleMap[title], linkType: linkType});
     parentList.add(model);
-    var view = new ParentChildView({model: model,
+    var view = new ParentChildView({collection: parentList,
+                                    model: model,
                                     className: "list-group-item"});
     $('#parents').prepend(view.render().el);
   }
@@ -227,7 +231,8 @@
   function addChild(title, linkType) {
     var model = new Backbone.Model({title: title, id: titleMap[title], linkType: linkType});
     childList.add(model);
-    var view = new ParentChildView({model: model,
+    var view = new ParentChildView({collection: childList,
+                                    model: model,
                                     className: "list-group-item"});
     $('#children').prepend(view.render().el);
   }
@@ -361,8 +366,17 @@
     source: linkTypeBH
   });
 
+  {% if parents %}
+  _.each({{parents|safe}}, function(parent) {
+    addParent(parent.title, parent.edge_type);
+  });
+  {% endif %}
 
-
+   {% if children %}
+   _.each({{children|safe}}, function(child) {
+     addChild(child.title, child.edge_type);
+   });
+  {% endif %}
 
 </script>
 {% endblock %}

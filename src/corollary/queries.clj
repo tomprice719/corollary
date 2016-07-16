@@ -8,12 +8,12 @@
 (defn get-parents [id row-fn]
   (query db ["select posts.title, posts.date, posts.id, edges.type as edge_type from posts join edges on posts.id = edges.parent_id where edges.child_id = ?"
              (Integer. id)]
-         {:row-fn (comp row-fn #(rename-keys % {:edge_type :edge-type}))}))
+         {:row-fn row-fn}))
 
 (defn get-children [id row-fn]
   (query db ["select posts.title, posts.date, posts.id, edges.type as edge_type from posts join edges on posts.id = edges.child_id where edges.parent_id = ?"
              (Integer. id)]
-         {:row-fn (comp row-fn #(rename-keys % {:edge_type :edge-type}))}))
+         {:row-fn row-fn}))
 
 (defn get-title-map []
   (reduce (fn [reduction {:keys [title id]}] (assoc reduction title id))

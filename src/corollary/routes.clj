@@ -47,9 +47,11 @@
                ("/selected" views/selected-post)
                ("/user/:name" set-name views/recent-posts)
                ("/compose" views/compose-post)
+               ("/edit" views/edit-post)
                ("/tree" views/tree-page))
              (POST
-               ("/addpost" updates/create-post)
+               ("/add-post" updates/create-post)
+               ("/update-post" updates/update-post)
                ("/preview-html" ajax/get-preview-html)))
 
 (def mysite

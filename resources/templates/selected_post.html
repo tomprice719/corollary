@@ -4,6 +4,7 @@
 <div class = "row">
   <div class = "col-sm-8">
     <h2>{{post.title}}</h2>
+    <a href ="/edit?selected={{selected}}">edit</a>
     <p>{{post.processed_content|safe}}</p>
   </div>
   <div class = "col-sm-4">
@@ -16,7 +17,7 @@
     <p>Children:</p>
     {% for child in children %}
     <p>
-      <span style="color:{{child.edge-colour}}">({{child.edge-type}})</span>
+      <span style="color:{{child.edge-colour}}">({{child.edge_type}})</span>
       <a href="/selected?selected={{child.id}}">{{child.title}}</a>
     </p>
     {% endfor %}

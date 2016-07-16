@@ -33,7 +33,7 @@
 (defn get-post [id] ;;Get rid of having to call first
   (first
     (query db
-           ["select title, date, processed_content from posts where id = ?"
+           ["select title, date, raw_content, processed_content from posts where id = ?"
             (Integer. id)]
            {:row-fn #(update % :date date-string)})))
 
@@ -54,8 +54,8 @@
                :posts (get-posts page-num)
                :page "recent"}))}))
 
-(defn add-edge-colour [{:keys [edge-type] :as post}]
-  (assoc post :edge-colour (get-edge-colour edge-type)))
+(defn add-edge-colour [{:keys [edge_type] :as post}]
+  (assoc post :edge-colour (get-edge-colour edge_type)))
 
 (defn selected-post [{:keys [selected] :as params}]
   {:body
@@ -66,12 +66,30 @@
                         :parents (get-parents selected add-edge-colour)
                         :children (get-children selected add-edge-colour)}))})
 
-(defn compose-post [params]
+(defn compose-post []
   {:body (render-file "templates/compose_post.html"
-                      {:title-map
+                      {:form-action "/add-post"
+                       :title-map
                        (cheshire/generate-string (get-title-map))
                        :link-types
                        (cheshire/generate-string (get-edge-types))})})
+
+(defn edit-post [{:keys [selected]}]
+  (let [{:keys [title raw_content]} (get-post selected)
+        parents (get-parents selected identity)
+        children (get-children selected identity)]
+    {:body (render-file "templates/compose_post.html"
+                        {:id selected
+                         :title title
+                         :content raw_content
+                         :edit true
+                         :form-action "/update-post"
+                         :parents (cheshire/generate-string parents)
+                         :children (cheshire/generate-string children)
+                         :title-map
+                         (cheshire/generate-string (get-title-map))
+                         :link-types
+                         (cheshire/generate-string (get-edge-types))})}))
 
 (defn tree-page [{:keys [selected] :as params}]
   {:body (render-file "templates/tree.html"

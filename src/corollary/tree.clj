@@ -66,7 +66,7 @@
                        :title "More ..."
                        :children []
                        :node-type "descendant"
-                       :edge-type "other"}]
+                       :edge_type "other"}]
         (if has-more
           node-data
           (-> node-data
@@ -159,7 +159,7 @@
                          right-x low-y))))
 
 ;;use defmulti / defmethod
-(defn draw-data [{{:keys [indent text-row] :as pos} :pos :keys [post-id posts top title prefix selected node-type edge-type] :as node}]
+(defn draw-data [{{:keys [indent text-row] :as pos} :pos :keys [post-id posts top title prefix selected node-type edge_type] :as node}]
   (if (= node-type "multipost")
     {:multipost true
      :x (get-x indent)
@@ -179,7 +179,7 @@
      :rect-y (- (get-y text-row) 15)
      :rect-height 19
      :rect-x (- (get-x indent) 3)
-     :edge-colour (get-edge-colour edge-type)
+     :edge-colour (get-edge-colour edge_type)
      }))
 
 ;;TODO: make changes to add-pos-data, draw-data

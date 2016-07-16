@@ -6,7 +6,8 @@
            [clojure.pprint :refer [pprint]]
            [sqlingvo.db]
            [sqlingvo.core :as sql]
-           [corollary.queries :refer [pandoc]]))
+           [corollary.queries :refer [pandoc]]
+           [clojure.pprint :refer [pprint]]))
 
 ;(defn local-pandoc [input]
 ;  (:out (clojure.java.shell/sh "pandoc" "-f" "markdown-raw_html" "--mathjax" :in input))) ;; you MUST escape raw HTML
@@ -23,6 +24,28 @@
   (if (not-empty edges)
     (jdbc/execute! db (add-edges-sql edges))))
 
+(defn add-parents [parents id]
+  (->> parents cheshire/parse-string
+       (map (fn [{edge-type "linkType" parent-id "id"}]
+              {:type edge-type
+               :parent_id parent-id
+               :child_id id}))
+       (add-edges)))
+
+(defn add-children [children id]
+  (->> children cheshire/parse-string
+       (map (fn [{edge-type "linkType" child-id "id"}]
+              {:type edge-type
+               :parent_id id
+               :child_id child-id}))
+       (add-edges)))
+
+(defn delete-parents [child-id]
+  (jdbc/delete! db :edges ["child_id = ?" (Integer. child-id)]))
+
+(defn delete-children [parent-id]
+  (jdbc/delete! db :edges ["parent_id = ?" (Integer. parent-id)]))
+
 (defn create-post [{:keys [name title content parents children]}]
   (let [id (next-post-id)]
     (jdbc/insert! db :posts
@@ -32,17 +55,19 @@
                    :date (utils/now)
                    :raw_content content
                    :processed_content (pandoc content)})
-    (->> parents cheshire/parse-string
-         (map (fn [{edge-type "linkType" parent-id "id"}]
-                {:type edge-type
-                 :parent_id parent-id
-                 :child_id id}))
-         (add-edges))
-    (->> children cheshire/parse-string
-         (map (fn [{edge-type "linkType" child-id "id"}]
-                {:type edge-type
-                 :parent_id id
-                 :child_id child-id}))
-         (add-edges))
+    (add-parents parents id)
+    (add-children children id)
     (redirect (str "/selected?selected=" id) :see-other)))
+
+(defn update-post [{:keys [title content parents children id]}]
+  (jdbc/update! db :posts
+                {:title title
+                 :raw_content content
+                 :processed_content (pandoc content)}
+                ["id = ?" (Integer. id)])
+  (delete-parents id)
+  (delete-children id)
+  (add-parents parents (Integer. id))
+  (add-children children (Integer. id))
+  (redirect (str "/selected?selected=" id) :see-other))
 
