@@ -7,26 +7,40 @@
   <div class = "col-sm-8">
     <h2>{{post.title}}</h2>
     <div id="post-actions">
+      Posted by {{post.author}}, {{post.date}}.
       <a href="#add-child-modal" class="btn btn-primary btn-xs" data-toggle="modal">New child post</a>
       <a href ="/edit?selected={{selected}}" class="btn btn-primary btn-xs">edit</a>
       <a href="#confirm-delete" class="btn btn-primary btn-xs" data-toggle="modal">delete</a>
     </div>
     <p>{{post.processed_content|safe}}</p>
   </div>
-  <div class = "col-sm-4">
-    <p>Parents:</p>
+  <div id="parent-child-column" class = "col-sm-4">
+
+    <p>Parents:
+    {% if parents %}
     {% for parent in parents %}
+    </p>
     <p>
       <a href="/selected?selected={{parent.id}}">{{parent.title}}</a>
     </p>
     {% endfor %}
-    <p>Children:</p>
+    {% else %}
+    None
+    </p>
+    {% endif %}
+    <p>Children:
+    {% if children %}
+    </p>
     {% for child in children %}
     <p>
       <span style="color:{{child.edge-colour}}">({{child.edge_type}})</span>
       <a href="/selected?selected={{child.id}}">{{child.title}}</a>
     </p>
     {% endfor %}
+    {% else %}
+    None
+  </p>
+    {% endif %}
   </div>
 
 </div>

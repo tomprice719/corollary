@@ -18,7 +18,11 @@ body {
 }
 
 #post-actions a {
-  margin-right: 10px;
+  margin-left: 10px;
+}
+
+#parent-child-column {
+  padding-top: 4em;
 }
 
 .typeahead:focus {

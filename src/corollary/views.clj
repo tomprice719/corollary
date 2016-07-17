@@ -33,7 +33,7 @@
 (defn get-post [id] ;;Get rid of having to call first
   (first
     (query db
-           ["select title, date, raw_content, processed_content from posts where id = ?"
+           ["select title, author, date, raw_content, processed_content from posts where id = ?"
             (Integer. id)]
            {:row-fn #(update % :date date-string)})))
 
@@ -63,8 +63,8 @@
                 (merge params
                        {:post (get-post selected)
                         :page "selected"
-                        :parents (get-parents selected add-edge-colour)
-                        :children (get-children selected add-edge-colour)
+                        :parents (not-empty (get-parents selected add-edge-colour))
+                        :children (not-empty (get-children selected add-edge-colour))
                         :link-types
                         (cheshire/generate-string (get-edge-types))}))})
 
