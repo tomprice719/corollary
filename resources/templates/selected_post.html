@@ -6,8 +6,11 @@
 <div class = "row">
   <div class = "col-sm-8">
     <h2>{{post.title}}</h2>
-    <a href ="/edit?selected={{selected}}">edit</a>
-    <a href="#confirm-delete" data-toggle="modal">delete</a>
+    <div id="post-actions">
+      <a href="#add-child-modal" class="btn btn-primary btn-xs" data-toggle="modal">New child post</a>
+      <a href ="/edit?selected={{selected}}" class="btn btn-primary btn-xs">edit</a>
+      <a href="#confirm-delete" class="btn btn-primary btn-xs" data-toggle="modal">delete</a>
+    </div>
     <p>{{post.processed_content|safe}}</p>
   </div>
   <div class = "col-sm-4">
@@ -47,6 +50,34 @@
     </div>
   </div>
 </div>
+
+<!-- Modal -->
+<div id="add-child-modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Create child post</h4>
+      </div>
+      <form action="/compose" method="get">
+        <input type="hidden" name="parent-title" value="{{post.title}}" />
+        <div class="modal-body">
+          <p>Enter the link type from this post to the child post.</p>
+          <div id = "new-child-link-type">
+            <input id="new-child-link-type-input" name="link-type" class="typeahead form-control" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <input class="btn btn-danger btn-ok" type="submit" value="Ok"/>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
 {% else %}
 
 <h1>
@@ -54,4 +85,30 @@
 </h1>
 
 {% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src='typeahead.bundle.js'></script>
+
+<script language = "javascript">
+  linkTypes = {{link-types|safe}}
+
+  // constructs the suggestion engine for link types
+  var linkTypeBH = new Bloodhound({
+    datumTokenizer: Bloodhound.tokenizers.whitespace,
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    local: linkTypes
+  });
+
+  $('#new-child-link-type .typeahead').typeahead({
+    hint: true,
+    highlight: true,
+    minLength: 1
+  },
+                                                  {
+    name: 'new-child-link-type',
+    source: linkTypeBH
+  });
+</script>
+
 {% endblock %}

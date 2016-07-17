@@ -64,11 +64,15 @@
                        {:post (get-post selected)
                         :page "selected"
                         :parents (get-parents selected add-edge-colour)
-                        :children (get-children selected add-edge-colour)}))})
+                        :children (get-children selected add-edge-colour)
+                        :link-types
+                        (cheshire/generate-string (get-edge-types))}))})
 
-(defn compose-post []
+(defn compose-post [{:keys [parent-title link-type]}]
   {:body (render-file "templates/compose_post.html"
                       {:form-action "/add-post"
+                       :parents (if parent-title
+                                  (cheshire/generate-string [{:title parent-title :edge_type link-type}]))
                        :title-map
                        (cheshire/generate-string (get-title-map))
                        :link-types

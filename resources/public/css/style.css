@@ -13,6 +13,14 @@ body {
   padding-top: 30px;
 }
 
+#post-actions {
+  padding-bottom: 30px;
+}
+
+#post-actions a {
+  margin-right: 10px;
+}
+
 .typeahead:focus {
   border: 2px solid #0097cf;
 }
