@@ -14,9 +14,9 @@
 
   {% if page-num > 0 %}
   <li class="page-item">
-    <a class="page-link" href="{{path}}?page-num=0{% if selected %}&selected={{selected}}{% endif %}" aria-label="Previous">
+    <a class="page-link" href="{{path}}?page-num=0{% if selected %}&selected={{selected}}{% endif %}" aria-label="Beginning">
       <span aria-hidden="true">&lt;&lt;</span>
-      <span class="sr-only">Previous</span>
+      <span class="sr-only">Beginning</span>
     </a>
   </li>
 
@@ -29,7 +29,7 @@
   {% endif %}
 
  <li class="page-item">
-   <a class="page-link" href="#">{{page-num}}</a>
+   <a class="page-link" href="#">{{page-num|add:1}}</a>
   </li>
 
   <li class="page-item">
