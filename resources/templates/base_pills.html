@@ -8,6 +8,11 @@
     <a href="/recent{% if selected %}?selected={{selected}}{% endif %}">Recent Posts</a>
   </li>
 
+  <li {% ifequal page "top-level" %} class="active" {% endifequal %}
+      id = "top-level-posts-button">
+    <a href="/top-level{% if selected %}?selected={{selected}}{% endif %}">Top-level posts</a>
+  </li>
+
   {% if selected%}
   <li {% ifequal page "selected" %} class="active" {% endifequal %}
       id = "selected-post-button">
@@ -23,10 +28,6 @@
     </a>
   </li>
   {% endif %}
-
-  <li>
-    <a href="#">Menu 3</a>
-  </li>
 
 </ul>
 {% endblock %}

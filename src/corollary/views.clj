@@ -44,15 +44,34 @@
           (* page-num posts-per-page)]
          {:row-fn #(update % :date date-string)}))
 
+(defn get-top-level [page-num]
+  (query db
+         ["select title, author, date, id from posts where id not in (select child_id from edges group by child_id) order by date desc limit ? offset ?"
+          posts-per-page
+          (* page-num posts-per-page)]
+         {:row-fn #(update % :date date-string)}))
+
 (defn recent-posts [params]
   (let [page-num (if-let [pn-str (:page-num params)] (Integer. pn-str) 0)]
     {:body
      (render-file
-       "templates/recent_posts.html"
+       "templates/feed.html"
        (merge params
               {:page-num page-num
                :posts (get-posts page-num)
-               :page "recent"}))}))
+               :page "recent"
+               :path "/recent"}))}))
+
+(defn top-level-posts [params]
+  (let [page-num (if-let [pn-str (:page-num params)] (Integer. pn-str) 0)]
+    {:body
+     (render-file
+       "templates/feed.html"
+       (merge params
+              {:page-num page-num
+               :posts (get-top-level page-num)
+               :page "top-level"
+               :path "/top-level"}))}))
 
 (defn add-edge-colour [{:keys [edge_type] :as post}]
   (assoc post :edge-colour (edges/get-edge-colour edge_type)))
