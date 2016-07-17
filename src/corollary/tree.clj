@@ -96,7 +96,7 @@
                            :prefix "Selected: "
                            :title (queries/get-one-title selected-post-id)}}
                      (into (priority-map) (get-child-kvs selected-post-id '() 0))
-                     10))
+                     15))
 
 (defn node-list [node-data]
   (tree-seq (constantly true)
@@ -120,14 +120,14 @@
       (rename-keys {top-key :top})
       (assoc-in [:top :top] true)))
 
-(defn add-ancestors [node-data top-key]
-  (if-let [parent (make-parent node-data top-key)]
+(defn add-ancestors [node-data top-key max-to-add]
+  (if-let [parent (and (> max-to-add 0) (make-parent node-data top-key))]
     (if (= (:node-type parent) "multipost")
       (assoc node-data :top parent)
       (let [key [(:post-id parent) :ancestor]]
         (if (contains? node-data key)
           (finish node-data top-key)
-          (add-ancestors (assoc node-data key parent) key))))
+          (add-ancestors (assoc node-data key parent) key (- max-to-add 1)))))
     (finish node-data top-key)))
 
 (def base-x 20)
@@ -187,7 +187,7 @@
 (defn draw-data-list [selected-post-id]
   (let [node-data (-> selected-post-id
                       get-nodes
-                      (add-ancestors '())
+                      (add-ancestors '() 3)
                       (add-pos-data init-pos :top))]
     (map draw-data (vals node-data))))
 
