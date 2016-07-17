@@ -25,6 +25,10 @@ body {
   padding-top: 4em;
 }
 
+#post-tree {
+  margin-top: 1em;
+}
+
 .typeahead:focus {
   border: 2px solid #0097cf;
 }

@@ -5,7 +5,7 @@
            [corollary.tree :as tree]
            [corollary.utils :refer [db] :as utils]
            [clojure.java.jdbc :refer [query]]
-           [corollary.edges :refer [get-edge-colour]]))
+           [corollary.edges :as edges]))
 
 (def posts-per-page 10)
 
@@ -55,7 +55,7 @@
                :page "recent"}))}))
 
 (defn add-edge-colour [{:keys [edge_type] :as post}]
-  (assoc post :edge-colour (get-edge-colour edge_type)))
+  (assoc post :edge-colour (edges/get-edge-colour edge_type)))
 
 (defn selected-post [{:keys [selected] :as params}]
   {:body
@@ -99,4 +99,5 @@
   {:body (render-file "templates/tree.html"
                       (merge params
                              { :page "tree"
-                               :nodes (tree/draw-data-list selected)}))})
+                               :nodes (tree/draw-data-list selected)
+                               :colours edges/colours}))})

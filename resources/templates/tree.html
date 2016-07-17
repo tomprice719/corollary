@@ -1,8 +1,33 @@
 {% extends "templates/base_pills.html" %}
 
 {% block content %}
-<svg width="1200" height="1200" id="svgBox"
+<svg width="1200" height="1200" id="post-tree"
      xmlns:xlink="http://www.w3.org/1999/xlink">
+  <rect x="0" y="7" width="15" height="15"
+        style="fill:{{colours.TryWeakerQuestion}};" />
+  <text id="foo" x="20" y="20">TryWeakerQuestion</text>
+  <rect x="250" y="7" width="15" height="15"
+        style="fill:{{colours.LookForSomethingMoreSpecific}};" />
+  <text id="foo" x="270" y="20">LookForSomethingMoreSpecific</text>
+  <rect x="500" y="7" width="15" height="15"
+        style="fill:{{colours.ClarifyQuestion}};" />
+  <text id="foo" x="520" y="20">ClarifyQuestion</text>
+  <rect x="750" y="7" width="15" height="15"
+        style="fill:{{colours.EvaluateApproach}};" />
+  <text id="foo" x="770" y="20">EvaluateApproach</text>
+
+  <rect x="0" y="32" width="15" height="15"
+        style="fill:{{colours.ClarifyConcept}};" />
+  <text id="foo" x="20" y="45">ClarifyConcept</text>
+  <rect x="250" y="32" width="15" height="15"
+        style="fill:{{colours.MoreDetails}};" />
+  <text id="foo" x="270" y="45">MoreDetails</text>
+  <rect x="500" y="32" width="15" height="15"
+        style="fill:{{colours.default}};" />
+  <text id="foo" x="520" y="45">Other</text>
+
+
+
   {% for node in nodes %}
   {% if node.multipost %}
   {% for post in node.posts %}

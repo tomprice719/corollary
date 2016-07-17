@@ -131,7 +131,7 @@
     (finish node-data top-key)))
 
 (def base-x 20)
-(def base-y 20)
+(def base-y 60)
 (def indent-width 20)
 (def text-height 25)
 

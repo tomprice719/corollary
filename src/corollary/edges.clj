@@ -7,11 +7,10 @@
     "EvaluateApproach" "#FF00FF"
     "ClarifyConcept" "#0000FF"
     "MoreDetails" "#FFFF00"
+    "default" "#808080"
     })
 
-(def default-colour "#808080")
-
 (defn get-edge-colour [edge-type]
-  (get colours edge-type default-colour))
+  (get colours edge-type (colours "default")))
 
 
