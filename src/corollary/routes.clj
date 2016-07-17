@@ -37,15 +37,11 @@
      (route/resources "/")
      (route/not-found "Page not found")))
 
-(defn set-name [params]
-  {:session (select-keys params [:name])})
-
 (easy-routes app
              (GET
                ("/" views/recent-posts)
                ("/recent" views/recent-posts)
                ("/selected" views/selected-post)
-               ("/user/:name" set-name views/recent-posts)
                ("/compose" views/compose-post)
                ("/edit" views/edit-post)
                ("/tree" views/tree-page))
