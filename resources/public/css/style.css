@@ -29,6 +29,11 @@ body {
   margin-top: 1em;
 }
 
+.active {
+  font-weight: bold;
+  font-size: 120%;
+}
+
 svg a {fill: #333}
 svg a :hover {fill: #469}
 
