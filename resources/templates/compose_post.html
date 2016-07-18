@@ -6,7 +6,7 @@
   {% if edit %}
   Edit Post
   {% else %}
-  Compose post
+  New post
   {% endif %}
 </h1>
 
@@ -27,8 +27,13 @@
   {% endif %}
   <fieldset class="form-group">
     <label>Content</label>
-    <textarea id="content-area" class="form-control" name="content" rows="3" placeholder = "Enter content">{{content}}</textarea>
-    <small class="text-muted">This is where you put the content</small>
+    <textarea id="content-area" class="form-control" name="content" rows="15" placeholder = "Enter content">{{content}}</textarea>
+    <small class="text-muted">
+      The markup language used is Pandoc-Markdown.
+      <a href = "http://www.unexpected-vortices.com/sw/rippledoc/quick-markdown-example.html">
+        See here for an example.
+      </a>
+    </small>
   </fieldset>
   <div class="clearfix">
     <div class="pull-right">
