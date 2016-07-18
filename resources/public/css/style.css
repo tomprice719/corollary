@@ -37,6 +37,8 @@ body {
 svg a {fill: #333}
 svg a :hover {fill: #469}
 
+svg text {fill: #333}
+
 .typeahead:focus {
   border: 2px solid #0097cf;
 }
