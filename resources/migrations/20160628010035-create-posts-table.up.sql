@@ -1,7 +1,7 @@
 CREATE TABLE POSTS(
   ID SERIAL PRIMARY KEY       NOT NULL,
   AUTHOR              TEXT    NOT NULL,
-  TITLE               TEXT    NOT NULL,
+  TITLE               TEXT    NOT NULL UNIQUE,
   RAW_CONTENT         TEXT    NOT NULL,
   PROCESSED_CONTENT   TEXT    NOT NULL,
   DATE                BIGINT  NOT NULL
