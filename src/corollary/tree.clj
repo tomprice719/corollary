@@ -187,7 +187,7 @@
 (defn draw-data-list [selected-post-id]
   (let [node-data (-> selected-post-id
                       get-nodes
-                      (add-ancestors '() 3)
+                      (add-ancestors '() 4)
                       (add-pos-data init-pos :top))]
     (map draw-data (vals node-data))))
 
