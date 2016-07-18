@@ -53,70 +53,67 @@
 
 (defn recent-posts [params]
   (let [page-num (if-let [pn-str (:page-num params)] (Integer. pn-str) 0)]
-    {:body
-     (render-file
-       "templates/feed.html"
-       (merge params
-              {:page-num page-num
-               :posts (get-posts page-num)
-               :page "recent"
-               :path "/recent"}))}))
+    (render-file
+      "templates/feed.html"
+      (merge params
+             {:page-num page-num
+              :posts (get-posts page-num)
+              :page "recent"
+              :path "/recent"}))))
 
 (defn top-level-posts [params]
   (let [page-num (if-let [pn-str (:page-num params)] (Integer. pn-str) 0)]
-    {:body
-     (render-file
-       "templates/feed.html"
-       (merge params
-              {:page-num page-num
-               :posts (get-top-level page-num)
-               :page "top-level"
-               :path "/top-level"}))}))
+    (render-file
+      "templates/feed.html"
+      (merge params
+             {:page-num page-num
+              :posts (get-top-level page-num)
+              :page "top-level"
+              :path "/top-level"}))))
 
 (defn add-edge-colour [{:keys [edge_type] :as post}]
   (assoc post :edge-colour (edges/get-edge-colour edge_type)))
 
 (defn selected-post [{:keys [selected] :as params}]
-  {:body
-   (render-file "templates/selected_post.html"
-                (merge params
-                       {:post (get-post selected)
-                        :page "selected"
-                        :parents (not-empty (get-parents selected add-edge-colour))
-                        :children (not-empty (get-children selected add-edge-colour))
-                        :link-types
-                        (cheshire/generate-string (get-edge-types))}))})
+  (render-file "templates/selected_post.html"
+               (merge params
+                      {:post (get-post selected)
+                       :page "selected"
+                       :parents (not-empty (get-parents selected add-edge-colour))
+                       :children (not-empty (get-children selected add-edge-colour))
+                       :link-types
+                       (cheshire/generate-string (get-edge-types))})))
 
 (defn compose-post [{:keys [parent-title link-type]}]
-  {:body (render-file "templates/compose_post.html"
-                      {:form-action "/add-post"
-                       :parents (if parent-title
-                                  (cheshire/generate-string [{:title parent-title :edge_type link-type}]))
-                       :title-map
-                       (cheshire/generate-string (get-title-map))
-                       :link-types
-                       (cheshire/generate-string (get-edge-types))})})
+  (render-file "templates/compose_post.html"
+               {:form-action "/add-post"
+                :parents (if parent-title
+                           (cheshire/generate-string [{:title parent-title :edge_type link-type}]))
+                :title-map
+                (cheshire/generate-string (get-title-map))
+                :link-types
+                (cheshire/generate-string (get-edge-types))}))
 
 (defn edit-post [{:keys [selected]}]
   (let [{:keys [title raw_content]} (get-post selected)
         parents (get-parents selected identity)
         children (get-children selected identity)]
-    {:body (render-file "templates/compose_post.html"
-                        {:id selected
-                         :title title
-                         :content raw_content
-                         :edit true
-                         :form-action "/update-post"
-                         :parents (cheshire/generate-string parents)
-                         :children (cheshire/generate-string children)
-                         :title-map
-                         (cheshire/generate-string (get-title-map))
-                         :link-types
-                         (cheshire/generate-string (get-edge-types))})}))
+    (render-file "templates/compose_post.html"
+                 {:id selected
+                  :title title
+                  :content raw_content
+                  :edit true
+                  :form-action "/update-post"
+                  :parents (cheshire/generate-string parents)
+                  :children (cheshire/generate-string children)
+                  :title-map
+                  (cheshire/generate-string (get-title-map))
+                  :link-types
+                  (cheshire/generate-string (get-edge-types))})))
 
 (defn tree-page [{:keys [selected] :as params}]
-  {:body (render-file "templates/tree.html"
-                      (merge params
-                             { :page "tree"
-                               :nodes (tree/draw-data-list selected)
-                               :colours edges/colours}))})
+  (render-file "templates/tree.html"
+               (merge params
+                      { :page "tree"
+                        :nodes (tree/draw-data-list selected)
+                        :colours edges/colours})))
