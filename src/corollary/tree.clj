@@ -21,23 +21,26 @@
 
 (defn new-pos [{last-text-row :text-row
                 last-bottom :bottom
-                last-indent :indent}
+                last-indent :indent
+                was-last-starter? :starter}
                {bottom-bottom :bottom}]
   (hash-map :text-row (+ last-bottom 1)
             :arrow-row last-text-row
             :bottom bottom-bottom
-            :indent last-indent))
+            :indent last-indent
+            :first-child was-last-starter?))
 
-(defn starting-pos [{:keys [bottom indent]} {:keys [node-type posts]}]
+(defn starter-pos [{:keys [bottom indent]} {:keys [node-type posts]}]
   (let [parent-size (if (= node-type "multipost") (count posts) 1)]
     (hash-map :text-row (+ bottom parent-size)
               :bottom (+ bottom parent-size)
-              :indent (+ indent 1))))
+              :indent (+ indent 1)
+              :starter true)))
 
 (defn add-pos-data [node-data last-pos key]
   (let
     [[new-node-data bottom-pos] (reduce reducer
-                                        [node-data (starting-pos last-pos (node-data key))]
+                                        [node-data (starter-pos last-pos (node-data key))]
                                         (get-in node-data [key :children]))]
     (assoc-in new-node-data
               [key :pos]
@@ -141,19 +144,21 @@
 (defn get-y [row]
   (+ base-y (* row text-height)))
 
-(defn arrow-points [{:keys [text-row arrow-row indent]} node-type]
+(defn arrow-points [{:keys [text-row arrow-row indent first-child]} node-type]
   (case node-type
     "descendant" (let [right-x (- (get-x indent) 3)
                        left-x (- right-x 10)
-                       high-y (+ (get-y arrow-row) 3)
-                       low-y (- (get-y text-row) 3)]
+                       high-y (if first-child
+                                (+ (get-y arrow-row) 3)
+                                (- (get-y arrow-row) 4))
+                       low-y (- (get-y text-row) 6)]
                    (vector left-x high-y
                            left-x low-y
                            right-x low-y))
     "ancestor" (let [right-x (- (get-x (+ indent 1)) 3)
                      left-x (- right-x 10)
                      high-y (+ (get-y text-row) 3)
-                     low-y (- (get-y (+ text-row 1)) 3)]
+                     low-y (- (get-y (+ text-row 1)) 6)]
                  (vector left-x high-y
                          left-x low-y
                          right-x low-y))))

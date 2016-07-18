@@ -29,7 +29,7 @@ body {
   margin-top: 1em;
 }
 
-svg a {fill: #444}
+svg a {fill: #333}
 svg a :hover {fill: #469}
 
 .typeahead:focus {
