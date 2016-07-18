@@ -14,19 +14,15 @@
 
 (defn get-params [request]
   (merge (:params request)
-         (:session request)
-         (:query-params request)
-         (select-keys request [:uri])))
+         (:query-params request)))
 
 (defn expand-route [method [pathstring & funcs]]
   (let [request (gensym)
         params (gensym)]
     `(~method ~pathstring ~request
               (let [~params (get-params ~request)]
-                (merge-with merge
-                            (select-keys ~request [:session])
-                            ~@(map #(list % params)
-                                   funcs))))))
+                ~@(map #(list % params)
+                       funcs)))))
 
 (defn expand-method-block [[method & routes]]
   (map #(expand-route method %) routes))

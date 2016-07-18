@@ -26,7 +26,6 @@
     (jdbc/execute! db (add-edges-sql edges))))
 
 (defn add-parents [parents id]
-  (pprint parents)
   (->> parents cheshire/parse-string
        (map (fn [{edge-type "linkType" parent-id "id"}]
               {:type edge-type
