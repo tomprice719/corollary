@@ -31,7 +31,7 @@
   {% for node in nodes %}
   {% if node.multipost %}
   {% for post in node.posts %}
-  <a xlink:href="/tree?selected={{post.id}}" >
+  <a xlink:href="/navigate?selected={{post.id}}" >
     <text id="foo" x="{{node.x}}" y="{{post.y}}">Ancestor: {{post.title}}</text>
   </a>
   {% endfor %}
@@ -46,7 +46,7 @@
   <polyline points="{{node.arrow-points}}"
             style="fill:none;stroke:{{node.edge-colour}};stroke-width:2" />
   {% endif %}
-  <a xlink:href="/tree?selected={{node.post-id}}" >
+  <a xlink:href="/navigate?selected={{node.post-id}}" >
     <text id="foo" x="{{node.x}}" y="{{node.y}}">{{node.title}}</text>
   </a>
   {% endif %}

@@ -41,7 +41,7 @@
                ("/selected" views/selected-post)
                ("/compose" views/compose-post)
                ("/edit" views/edit-post)
-               ("/tree" views/tree-page))
+               ("/navigate" views/navigate-page))
              (POST
                ("/add-post" updates/create-post)
                ("/update-post" updates/update-post)

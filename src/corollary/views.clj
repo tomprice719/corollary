@@ -111,7 +111,7 @@
                   :link-types
                   (cheshire/generate-string (get-edge-types))})))
 
-(defn tree-page [{:keys [selected] :as params}]
+(defn navigate-page [{:keys [selected] :as params}]
   (render-file "templates/tree.html"
                (merge params
                       { :page "tree"
