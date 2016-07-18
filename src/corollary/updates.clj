@@ -7,7 +7,8 @@
            [sqlingvo.db]
            [sqlingvo.core :as sql]
            [corollary.queries :refer [pandoc get-parents]]
-           [clojure.pprint :refer [pprint]]))
+           [clojure.pprint :refer [pprint]]
+           [clojure.string :refer [trim]]))
 
 ;(defn local-pandoc [input]
 ;  (:out (clojure.java.shell/sh "pandoc" "-f" "markdown-raw_html" "--mathjax" :in input))) ;; you MUST escape raw HTML
@@ -25,6 +26,7 @@
     (jdbc/execute! db (add-edges-sql edges))))
 
 (defn add-parents [parents id]
+  (pprint parents)
   (->> parents cheshire/parse-string
        (map (fn [{edge-type "linkType" parent-id "id"}]
               {:type edge-type
@@ -51,7 +53,7 @@
     (jdbc/insert! db :posts
                   {:id id
                    :author name
-                   :title title
+                   :title (trim title)
                    :date (utils/now)
                    :raw_content content
                    :processed_content (pandoc content)})
@@ -59,10 +61,9 @@
     (add-children children id)
     (redirect (str "/selected?selected=" id) :see-other)))
 
-(defn update-post [{:keys [title content parents children id]}]
+(defn update-post [{:keys [content parents children id]}]
   (jdbc/update! db :posts
-                {:title title
-                 :raw_content content
+                {:raw_content content
                  :processed_content (pandoc content)}
                 ["id = ?" (Integer. id)])
   (delete-parents id)

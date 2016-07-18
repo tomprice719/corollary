@@ -3,15 +3,23 @@
 {% block content %}
 
 <h1>
+  {% if edit %}
+  Edit Post
+  {% else %}
   Compose post
+  {% endif %}
 </h1>
 
 <form id = "form" action="{{form-action}}" method="post">
+  {% if edit %}
+  <h2>
+    {{title}}
+  </h2>
+  {% else %}
   <fieldset class="form-group">
     <label>Title</label>
-    <input type="text" name="title" class="form-control" placeholder="Enter title" value = "{{title}}">
+    <input type="text" name="title" id="title-input" class="form-control" placeholder="Enter title" value = "{{title}}">
   </fieldset>
-  {% if not edit %}
   <fieldset class="form-group">
     <label>Your name</label>
     <input type="text" name="name" class="form-control" placeholder="Enter name">
@@ -50,6 +58,10 @@
 
   <!-- Hidden input to include id of post, for editing an existing post -->
   <input type="hidden" name="id" value="{{id}}" />
+
+  <!-- Hidden inputs to send parents / children -->
+  <input type="hidden" name="parents" id = "parents-hidden-input"/>
+  <input type="hidden" name="children" id = "children-hidden-input"/>
 
   <button type="submit" class="btn btn-primary btn-lg pull-right">Submit</button>
 </form>
@@ -294,19 +306,20 @@
     }, "html");
   });
 
-  function addFormData(name, collection) {
-    $('<input />', {
-      "type":"hidden",
-      "name":name,
-      "value":JSON.stringify(collection)
-    }).appendTo('#form');
-  }
-
-  $("#form").submit( function(eventObj) {
-    addFormData("parents", parentList);
-    addFormData("children", childList);
-    return true;
-  });
+  $("#form").submit( function(event) {
+    {% if edit %}
+    $("#parents-hidden-input").val(JSON.stringify(parentList));
+    $("#children-hidden-input").val(JSON.stringify(childList));
+    {% else %}
+    if($("#title-input").val().trim() in titleMap) {
+      alert( "There already exists a post with that title. You need to choose a unique title.");
+      event.preventDefault();
+    } else {
+      $("#parents-hidden-input").val(JSON.stringify(parentList));
+      $("#children-hidden-input").val(JSON.stringify(childList));
+    }
+    {% endif %}
+});
 
   // constructs the suggestion engine for titles
   var titleBH = new Bloodhound({
