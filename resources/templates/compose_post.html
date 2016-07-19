@@ -11,20 +11,14 @@
 </h1>
 
 <form id = "form" action="{{form-action}}" method="post">
-  {% if edit %}
-  <h2>
-    {{title}}
-  </h2>
-  {% else %}
   <fieldset class="form-group">
     <label>Title</label>
     <input type="text" name="title" id="title-input" class="form-control" placeholder="Enter title" value = "{{title}}">
   </fieldset>
   <fieldset class="form-group">
     <label>Your name</label>
-    <input type="text" name="name" class="form-control" placeholder="Enter name">
+    <input type="text" name="name" class="form-control" placeholder="Enter name" value="{{author}}">
   </fieldset>
-  {% endif %}
   <fieldset class="form-group">
     <label>Content</label>
     <textarea id="content-area" class="form-control" name="content" rows="15" placeholder = "Enter content">{{content}}</textarea>
@@ -312,10 +306,6 @@
   });
 
   $("#form").submit( function(event) {
-    {% if edit %}
-    $("#parents-hidden-input").val(JSON.stringify(parentList));
-    $("#children-hidden-input").val(JSON.stringify(childList));
-    {% else %}
     if($("#title-input").val().trim() in titleMap) {
       alert( "There already exists a post with that title. You need to choose a unique title.");
       event.preventDefault();
@@ -323,8 +313,7 @@
       $("#parents-hidden-input").val(JSON.stringify(parentList));
       $("#children-hidden-input").val(JSON.stringify(childList));
     }
-    {% endif %}
-});
+  });
 
   // constructs the suggestion engine for titles
   var titleBH = new Bloodhound({

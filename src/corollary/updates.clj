@@ -60,9 +60,11 @@
     (add-children children id)
     (redirect (str "/selected?selected=" id) :see-other)))
 
-(defn update-post [{:keys [content parents children id]}]
+(defn update-post [{:keys [content parents children id title name]}]
   (jdbc/update! db :posts
-                {:raw_content content
+                {:author name
+                 :title title
+                 :raw_content content
                  :processed_content (pandoc content)}
                 ["id = ?" (Integer. id)])
   (delete-parents id)

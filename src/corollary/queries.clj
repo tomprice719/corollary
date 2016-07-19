@@ -15,11 +15,15 @@
              (Integer. id)]
          {:row-fn row-fn}))
 
-(defn get-title-map []
-  (reduce (fn [reduction {:keys [title id]}] (assoc reduction title id))
-          {}
-          (query db
-                 ["select title, id from posts"])))
+(defn get-title-map
+  ([] (reduce (fn [reduction {:keys [title id]}] (assoc reduction title id))
+              {}
+              (query db
+                     ["select title, id from posts"])))
+  ([post-id] (reduce (fn [reduction {:keys [title id]}] (assoc reduction title id))
+                     {}
+                     (query db
+                            ["select title, id from posts where id != ?" (Integer. post-id)]))))
 
 (defn get-one-title [post-id]
   (first (query db

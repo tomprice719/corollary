@@ -95,19 +95,20 @@
                 (cheshire/generate-string (get-edge-types))}))
 
 (defn edit-post [{:keys [selected]}]
-  (let [{:keys [title raw_content]} (get-post selected)
+  (let [{:keys [title author raw_content]} (get-post selected)
         parents (get-parents selected identity)
         children (get-children selected identity)]
     (render-file "templates/compose_post.html"
                  {:id selected
                   :title title
+                  :author author
                   :content raw_content
                   :edit true
                   :form-action "/update-post"
                   :parents (cheshire/generate-string parents)
                   :children (cheshire/generate-string children)
                   :title-map
-                  (cheshire/generate-string (get-title-map))
+                  (cheshire/generate-string (get-title-map selected))
                   :link-types
                   (cheshire/generate-string (get-edge-types))})))
 
