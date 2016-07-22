@@ -1,9 +1,10 @@
 (ns corollary.queries
   (require [corollary.utils :refer [db] :as utils]
            [clojure.java.jdbc :refer [query]]
-           [clojure.set :refer [rename-keys]]
+           [clojure.set :refer [rename-keys union]]
            [environ.core :refer [env]]
-           [clj-http.client :as client]))
+           [clj-http.client :as client]
+           [corollary.edges :refer [starting-edge-types]]))
 
 (defn get-parents [id row-fn]
   (query db ["select posts.title, posts.date, posts.id, edges.type as edge_type from posts join edges on posts.id = edges.parent_id where edges.child_id = ? order by posts.date desc"
@@ -32,9 +33,11 @@
                 {:row-fn :title})))
 
 (defn get-edge-types []
-  (query db
-         ["select type from edges group by type"]
-         {:row-fn :type}))
+  (seq (union
+         (set (query db
+                     ["select type from edges"]
+                     {:row-fn :type}))
+         starting-edge-types)))
 
 (defn pandoc [input]
   (:body (client/post (env :pandoc-url)

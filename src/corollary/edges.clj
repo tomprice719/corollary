@@ -1,5 +1,20 @@
 (ns corollary.edges)
 
+(def starting-edge-types
+  #{"GeneralizeQuestion"
+    "LookForSomethingMoreSpecific"
+    "TryWeakerQuestion"
+    "LookForSomethingLessSpecific"
+    "MoreDetails"
+    "EvaluateApproach"
+    "TryToMakeQuestionMorePrecise"
+    "ClarifyConcept"
+    "ClarifyQuestion"
+    "TryToFormulateDefinition"
+    "CheckGuess"
+    "GeneralizeCounterexample"
+    "TryToProveTheOpposite"})
+
 (def colours
   { "TryWeakerQuestion" "#FF0000"
     "LookForSomethingMoreSpecific" "#0000FF"
