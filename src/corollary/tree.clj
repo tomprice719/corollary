@@ -5,8 +5,7 @@
             [clojure.data.priority-map :refer :all]
             [clojure.java.jdbc :refer [query]]
             [corollary.queries :as queries]
-            [corollary.utils :refer [db thrush]]
-            [corollary.edges :refer [get-edge-colour]])) ;;maybe you just need priority-map
+            [corollary.utils :refer [db thrush]])) ;;maybe you just need priority-map
 
 (declare add-pos-data)
 
@@ -68,8 +67,7 @@
             more-node {:post-id (:post-id (node-data parent-key))
                        :title "More ..."
                        :children []
-                       :node-type "descendant"
-                       :edge_type "other"}]
+                       :node-type "descendant"}]
         (if has-more
           node-data
           (-> node-data
@@ -184,7 +182,6 @@
      :rect-y (- (get-y text-row) 15)
      :rect-height 19
      :rect-x (- (get-x indent) 3)
-     :edge-colour (get-edge-colour edge_type)
      }))
 
 ;;TODO: make changes to add-pos-data, draw-data

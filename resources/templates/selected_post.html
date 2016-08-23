@@ -33,7 +33,6 @@
     </p>
     {% for child in children %}
     <p>
-      <span style="color:{{child.edge-colour}}">({{child.edge_type}})</span>
       <a href="/selected?selected={{child.id}}">{{child.title}}</a>
     </p>
     {% endfor %}
@@ -105,7 +104,7 @@
 <script src='typeahead.bundle.js'></script>
 
 <script language = "javascript">
-  linkTypes = {{link-types|safe}}
+  linkTypes = [];
 
   // constructs the suggestion engine for link types
   var linkTypeBH = new Bloodhound({

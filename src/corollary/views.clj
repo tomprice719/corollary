@@ -4,10 +4,10 @@
            [cheshire.core :as cheshire]
            [corollary.tree :as tree]
            [corollary.utils :refer [db] :as utils]
-           [clojure.java.jdbc :refer [query]]
-           [corollary.edges :as edges]))
+           [clojure.java.jdbc :refer [query]]))
 
 (def posts-per-page 10)
+(def edge-colour "#000000")
 
 (defn date-string [date]
   (let [seconds-diff (quot (- (utils/now) date) 1000)
@@ -71,18 +71,13 @@
               :page "top-level"
               :path "/top-level"}))))
 
-(defn add-edge-colour [{:keys [edge_type] :as post}]
-  (assoc post :edge-colour (edges/get-edge-colour edge_type)))
-
 (defn selected-post [{:keys [selected] :as params}]
   (render-file "templates/selected_post.html"
                (merge params
                       {:post (get-post selected)
                        :page "selected"
-                       :parents (not-empty (get-parents selected add-edge-colour))
-                       :children (not-empty (get-children selected add-edge-colour))
-                       :link-types
-                       (cheshire/generate-string (get-edge-types))})))
+                       :parents (not-empty (get-parents selected identity))
+                       :children (not-empty (get-children selected identity))})))
 
 (defn compose-post [{:keys [parent-title link-type]}]
   (render-file "templates/compose_post.html"
@@ -90,9 +85,7 @@
                 :parents (if parent-title
                            (cheshire/generate-string [{:title parent-title :edge_type link-type}]))
                 :title-map
-                (cheshire/generate-string (get-title-map))
-                :link-types
-                (cheshire/generate-string (get-edge-types))}))
+                (cheshire/generate-string (get-title-map))}))
 
 (defn edit-post [{:keys [selected]}]
   (let [{:keys [title author raw_content]} (get-post selected)
@@ -108,13 +101,11 @@
                   :parents (cheshire/generate-string parents)
                   :children (cheshire/generate-string children)
                   :title-map
-                  (cheshire/generate-string (get-title-map selected))
-                  :link-types
-                  (cheshire/generate-string (get-edge-types))})))
+                  (cheshire/generate-string (get-title-map selected))})))
 
 (defn navigate-page [{:keys [selected] :as params}]
   (render-file "templates/tree.html"
                (merge params
                       { :page "tree"
                         :nodes (tree/draw-data-list selected)
-                        :colours edges/colours})))
+                        :edge-colour edge-colour})))
