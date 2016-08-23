@@ -80,10 +80,6 @@
         <div id = "new-parent-title">
           <input id="new-parent-title-input" class="typeahead form-control" />
         </div>
-        <p>Enter the link type from the parent post to this post.</p>
-        <div id = "new-parent-link-type">
-          <input id="new-parent-link-type-input" class="typeahead form-control" />
-        </div>
       </div>
       <div class="modal-footer">
         <button id="add-parent" type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
@@ -108,10 +104,6 @@
         <p>Enter the title of the post you would like to add as a child.</p>
         <div id = "new-child-title">
           <input id="new-child-title-input" class="typeahead form-control" />
-        </div>
-        <p>Enter the link type from this post to the child post.</p>
-        <div id = "new-child-link-type">
-          <input id="new-child-link-type-input" class="typeahead form-control" />
         </div>
       </div>
       <div class="modal-footer">
@@ -201,7 +193,6 @@
 <script language = "javascript">
 
   titleMap = {{title-map|safe}};
-  linkTypes = [];
 
   ParentChildView = Backbone.View.extend({
     tagName: 'li',
@@ -236,8 +227,8 @@
     return txtarea.value.substring(start, finish);
   }
 
-  function addParent(title, linkType) {
-    var model = new Backbone.Model({title: title, id: titleMap[title], linkType: linkType});
+  function addParent(title) {
+    var model = new Backbone.Model({title: title, id: titleMap[title]});
     parentList.add(model);
     var view = new ParentChildView({collection: parentList,
                                     model: model,
@@ -245,8 +236,8 @@
     $('#parents').prepend(view.render().el);
   }
 
-  function addChild(title, linkType) {
-    var model = new Backbone.Model({title: title, id: titleMap[title], linkType: linkType});
+  function addChild(title) {
+    var model = new Backbone.Model({title: title, id: titleMap[title]});
     childList.add(model);
     var view = new ParentChildView({collection: childList,
                                     model: model,
@@ -352,42 +343,15 @@
     source: titleBH
   });
 
-  // constructs the suggestion engine for link types
-  var linkTypeBH = new Bloodhound({
-    datumTokenizer: Bloodhound.tokenizers.whitespace,
-    queryTokenizer: Bloodhound.tokenizers.whitespace,
-    local: linkTypes
-  });
-
-  $('#new-parent-link-type .typeahead').typeahead({
-    hint: true,
-    highlight: true,
-    minLength: 1
-  },
-                                                  {
-    name: 'new-parent-link-type',
-    source: linkTypeBH
-  });
-
-  $('#new-child-link-type .typeahead').typeahead({
-    hint: true,
-    highlight: true,
-    minLength: 1
-  },
-                                                 {
-    name: 'new-child-link-type',
-    source: linkTypeBH
-  });
-
   {% if parents %}
   _.each({{parents|safe}}, function(parent) {
-    addParent(parent.title, parent.edge_type);
+    addParent(parent.title);
   });
   {% endif %}
 
    {% if children %}
    _.each({{children|safe}}, function(child) {
-     addChild(child.title, child.edge_type);
+     addChild(child.title);
    });
   {% endif %}
 

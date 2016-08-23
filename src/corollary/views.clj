@@ -79,11 +79,11 @@
                        :parents (not-empty (get-parents selected identity))
                        :children (not-empty (get-children selected identity))})))
 
-(defn compose-post [{:keys [parent-title link-type]}]
+(defn compose-post [{:keys [parent-title]}]
   (render-file "templates/compose_post.html"
                {:form-action "/add-post"
                 :parents (if parent-title
-                           (cheshire/generate-string [{:title parent-title :edge_type link-type}]))
+                           (cheshire/generate-string [{:title parent-title}]))
                 :title-map
                 (cheshire/generate-string (get-title-map))}))
 
