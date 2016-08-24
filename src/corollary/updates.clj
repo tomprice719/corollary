@@ -27,17 +27,15 @@
 
 (defn add-parents [parents id]
   (->> parents cheshire/parse-string
-       (map (fn [{edge-type "linkType" parent-id "id"}]
-              {:type edge-type
-               :parent_id parent-id
+       (map (fn [{parent-id "id"}]
+              {:parent_id parent-id
                :child_id (Integer. id)}))
        (add-edges)))
 
 (defn add-children [children id]
   (->> children cheshire/parse-string
-       (map (fn [{edge-type "linkType" child-id "id"}]
-              {:type edge-type
-               :parent_id (Integer. id)
+       (map (fn [{child-id "id"}]
+              {:parent_id (Integer. id)
                :child_id child-id}))
        (add-edges)))
 
