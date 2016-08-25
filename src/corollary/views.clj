@@ -110,5 +110,5 @@
                         :nodes (tree/draw-data-list selected)
                         :edge-colour edge-colour})))
 
-(defn request-password []
-  (render-file "templates/password.html" {}))
+(defn request-password [wrong-password]
+  (render-file "templates/password.html" {:wrong-password wrong-password}))

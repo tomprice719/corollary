@@ -15,12 +15,16 @@
 ;;TODO: you want to get an alert when you enter the wrong password
 
 (defn check-password [{{password :value} "password" :as params}]
-  (= password (env :alpha-password)))
+  (cond
+    (= password (env :alpha-password)) :correct-password
+    (nil? password) :no-password
+    :else :wrong-password))
 
 (defn wrap-check-password [params handler]
-  `(if (check-password ~params)
-     (~handler ~params)
-     (views/request-password)))
+  `(case (check-password ~params)
+     :correct-password (~handler ~params)
+     :no-password (views/request-password false)
+     :wrong-password (views/request-password true)))
 
 (defn get-params [request]
   (merge (:params request)
