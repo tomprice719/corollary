@@ -12,17 +12,27 @@
 
 ;;Is compojure even doing anything for you?
 
+;;TODO: you want to get an alert when you enter the wrong password
+
+(defn check-password [{{password :value} "password" :as params}]
+  (= password (env :alpha-password)))
+
+(defn wrap-check-password [params handler]
+  `(if (check-password ~params)
+     (~handler ~params)
+     (views/request-password)))
+
 (defn get-params [request]
   (merge (:params request)
-         (:query-params request)))
+         (:query-params request)
+         (:cookies request)))
 
-(defn expand-route [method [pathstring & funcs]]
+(defn expand-route [method [pathstring handler]]
   (let [request (gensym)
         params (gensym)]
     `(~method ~pathstring ~request
-              (let [~params (get-params ~request)]
-                ~@(map #(list % params)
-                       funcs)))))
+       (let [~params (get-params ~request)]
+         ~(wrap-check-password params handler)))))
 
 (defn expand-method-block [[method & routes]]
   (map #(expand-route method %) routes))
@@ -48,6 +58,6 @@
                ("/delete-post" updates/delete-post)
                ("/preview-html" ajax/get-preview-html)))
 
+;;TODO: get rid of this
 (def mysite
-  (site #'app
-        {:session {:store (cookie-store {:key (.getBytes (env :cookie-store-key))})}}))
+  (site #'app))

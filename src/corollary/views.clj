@@ -109,3 +109,6 @@
                       { :page "tree"
                         :nodes (tree/draw-data-list selected)
                         :edge-colour edge-colour})))
+
+(defn request-password []
+  (render-file "templates/password.html" {}))
