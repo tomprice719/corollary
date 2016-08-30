@@ -13,27 +13,38 @@
       <a href="#confirm-delete" class="btn btn-primary btn-xs" data-toggle="modal">delete</a>
     </div>
     {{post.processed_content|safe}}
-    <h3>Comments</h3>
-    <p><strong>Tom Price</strong>, 3 days ago:</p>
-    <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec maximus urna ante, a tempor massa varius et. Vestibulum sagittis tempus arcu, non viverra magna malesuada non. Fusce magna sapien, bibendum sed mauris vitae, pellentesque euismod risus. Cras volutpat libero ligula, eu molestie lectus semper non. Vestibulum euismod ante porttitor ex euismod, et vestibulum ipsum dictum. Nunc ullamcorper venenatis diam. Morbi mattis auctor purus id dignissim. Fusce varius turpis a lectus pretium elementum. Donec et sapien ipsum. Donec molestie nunc vitae turpis vehicula, non gravida libero cursus. </p>
-    <p><strong>Tom Price</strong>, 3 days ago:</p>
-    <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec maximus urna ante, a tempor massa varius et. Vestibulum sagittis tempus arcu, non viverra magna malesuada non. Fusce magna sapien, bibendum sed mauris vitae, pellentesque euismod risus. Cras volutpat libero ligula, eu molestie lectus semper non. Vestibulum euismod ante porttitor ex euismod, et vestibulum ipsum dictum. Nunc ullamcorper venenatis diam. Morbi mattis auctor purus id dignissim. Fusce varius turpis a lectus pretium elementum. Donec et sapien ipsum. Donec molestie nunc vitae turpis vehicula, non gravida libero cursus. </p>
-    <p><strong>Tom Price</strong>, 3 days ago:</p>
-    <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec maximus urna ante, a tempor massa varius et. Vestibulum sagittis tempus arcu, non viverra magna malesuada non. Fusce magna sapien, bibendum sed mauris vitae, pellentesque euismod risus. Cras volutpat libero ligula, eu molestie lectus semper non. Vestibulum euismod ante porttitor ex euismod, et vestibulum ipsum dictum. Nunc ullamcorper venenatis diam. Morbi mattis auctor purus id dignissim. Fusce varius turpis a lectus pretium elementum. Donec et sapien ipsum. Donec molestie nunc vitae turpis vehicula, non gravida libero cursus. </p>
-    <p><a name="bottom-comment"></a><strong>Tom Price</strong>, 3 days ago:</p>
-    <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec maximus urna ante, a tempor massa varius et. Vestibulum sagittis tempus arcu, non viverra magna malesuada non. Fusce magna sapien, bibendum sed mauris vitae, pellentesque euismod risus. Cras volutpat libero ligula, eu molestie lectus semper non. Vestibulum euismod ante porttitor ex euismod, et vestibulum ipsum dictum. Nunc ullamcorper venenatis diam. Morbi mattis auctor purus id dignissim. Fusce varius turpis a lectus pretium elementum. Donec et sapien ipsum. Donec molestie nunc vitae turpis vehicula, non gravida libero cursus. </p>
+    <hr>
+    {% if comments %}
+      <h3 style = "padding-bottom: 0.5em">Comments</h3>
+      {% for comment in comments %}
+        <p><strong>{{comment.author}}</strong>, {{comment.date}}:</p>
+        <p>{{comment.processed_content|safe}}</p>
+      {% endfor %}
+    {% endif %}
+
     <h3>Add a comment</h3>
     <form id = "form" action="/add-comment" method="post">
       <fieldset class="form-group">
         <label>Your name</label>
-        <input type="text" name="name" class="form-control" placeholder="Enter your name">
+        <input id="comment-author" type="text" name="name" class="form-control" placeholder="Enter your name">
       </fieldset>
       <fieldset class="form-group">
         <label>Comment</label>
-        <textarea id="content-area" class="form-control" name="content" rows="7" placeholder = "Enter your comment"></textarea>
+        <textarea id="comment-content-area" class="form-control" name="content" rows="7" placeholder = "Enter your comment"></textarea>
+        <small class="text-muted">
+          The markup language used is Pandoc-Markdown.
+          <a href = "http://www.unexpected-vortices.com/sw/rippledoc/quick-markdown-example.html">
+            See here for an example.
+          </a>
+        </small>
       </fieldset>
       <input type="hidden" name="post-id" value = {{selected}} />
-      <button type="submit" class="btn btn-primary btn-lg pull-right">Submit</button>
+      <div class="clearfix">
+        <div class="pull-right">
+          <button id="preview-comment-button" type="button" class="btn btn-primary btn-lg" data-toggle="modal">Preview</button>
+          <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+        </div>
+      </div>
     </form>
   </div>
 
@@ -67,6 +78,7 @@
 
 </div>
 
+<!-- Delete modal -->
 <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -84,6 +96,28 @@
         </form>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Preview modal -->
+<div id="previewModal" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-lg">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">New Comment Preview</h4>
+      </div>
+      <div class="modal-body">
+        <p><strong id="preview-author"></strong>:</p>
+        <p id="preview-content"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -117,6 +151,15 @@
                                                   {
     name: 'new-child-link-type',
     source: linkTypeBH
+  });
+
+  $("#preview-comment-button").click(function(){
+    $.post("/preview-html", {selection: $("#comment-content-area").val()}, function(data) {
+      $("#preview-author").html($("#comment-author").val());
+      $("#preview-content").html(data);
+      MathJax.Hub.Queue(["Typeset",MathJax.Hub,"previewBody"]);
+      $("#previewModal").modal();
+    }, "html");
   });
 </script>
 

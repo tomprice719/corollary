@@ -51,6 +51,12 @@
           (* page-num posts-per-page)]
          {:row-fn #(update % :date date-string)}))
 
+(defn get-comments [post-id]
+  (query db
+         ["select author, date, processed_content from comments where post_id = ? order by date asc"
+          (Integer. post-id)]
+         {:row-fn #(update % :date date-string)}))
+
 (defn recent-posts [params]
   (let [page-num (if-let [pn-str (:page-num params)] (Integer. pn-str) 0)]
     (render-file
@@ -77,7 +83,8 @@
                       {:post (get-post selected)
                        :page "selected"
                        :parents (not-empty (get-parents selected identity))
-                       :children (not-empty (get-children selected identity))})))
+                       :children (not-empty (get-children selected identity))
+                       :comments (not-empty (get-comments selected))})))
 
 (defn compose-post [{:keys [parent-title]}]
   (render-file "templates/compose_post.html"

@@ -81,7 +81,6 @@
       (redirect (str "/selected?selected=" (:id (first parents))) :see-other))))
 
 (defn create-comment [{:keys [name content post-id]}]
-  (println name content)
   (jdbc/insert! db :comments
                 {:author name
                  :date (utils/now)
