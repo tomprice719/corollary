@@ -82,5 +82,11 @@
 
 (defn create-comment [{:keys [name content post-id]}]
   (println name content)
-  (redirect (str "/selected?selected=" post-id) :see-other))
+  (jdbc/insert! db :comments
+                {:author name
+                 :date (utils/now)
+                 :raw_content content
+                 :processed_content (pandoc content)
+                 :post_id (Integer. post-id)})
+  (redirect (str "/selected?selected=" post-id "#bottom-comment") :see-other))
 

@@ -7,12 +7,34 @@
   <div class = "col-sm-8">
     <h2>{{post.title}}</h2>
     <div id="post-actions">
-      Posted by {{post.author}}, {{post.date}}.
+      Posted by <strong>{{post.author}}</strong>, {{post.date}}.
       <a href="/compose?parent-title={{post.title}}" class="btn btn-primary btn-xs" data-toggle="modal">New child post</a>
       <a href ="/edit?selected={{selected}}" class="btn btn-primary btn-xs">edit</a>
       <a href="#confirm-delete" class="btn btn-primary btn-xs" data-toggle="modal">delete</a>
     </div>
     {{post.processed_content|safe}}
+    <h3>Comments</h3>
+    <p><strong>Tom Price</strong>, 3 days ago:</p>
+    <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec maximus urna ante, a tempor massa varius et. Vestibulum sagittis tempus arcu, non viverra magna malesuada non. Fusce magna sapien, bibendum sed mauris vitae, pellentesque euismod risus. Cras volutpat libero ligula, eu molestie lectus semper non. Vestibulum euismod ante porttitor ex euismod, et vestibulum ipsum dictum. Nunc ullamcorper venenatis diam. Morbi mattis auctor purus id dignissim. Fusce varius turpis a lectus pretium elementum. Donec et sapien ipsum. Donec molestie nunc vitae turpis vehicula, non gravida libero cursus. </p>
+    <p><strong>Tom Price</strong>, 3 days ago:</p>
+    <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec maximus urna ante, a tempor massa varius et. Vestibulum sagittis tempus arcu, non viverra magna malesuada non. Fusce magna sapien, bibendum sed mauris vitae, pellentesque euismod risus. Cras volutpat libero ligula, eu molestie lectus semper non. Vestibulum euismod ante porttitor ex euismod, et vestibulum ipsum dictum. Nunc ullamcorper venenatis diam. Morbi mattis auctor purus id dignissim. Fusce varius turpis a lectus pretium elementum. Donec et sapien ipsum. Donec molestie nunc vitae turpis vehicula, non gravida libero cursus. </p>
+    <p><strong>Tom Price</strong>, 3 days ago:</p>
+    <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec maximus urna ante, a tempor massa varius et. Vestibulum sagittis tempus arcu, non viverra magna malesuada non. Fusce magna sapien, bibendum sed mauris vitae, pellentesque euismod risus. Cras volutpat libero ligula, eu molestie lectus semper non. Vestibulum euismod ante porttitor ex euismod, et vestibulum ipsum dictum. Nunc ullamcorper venenatis diam. Morbi mattis auctor purus id dignissim. Fusce varius turpis a lectus pretium elementum. Donec et sapien ipsum. Donec molestie nunc vitae turpis vehicula, non gravida libero cursus. </p>
+    <p><a name="bottom-comment"></a><strong>Tom Price</strong>, 3 days ago:</p>
+    <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec maximus urna ante, a tempor massa varius et. Vestibulum sagittis tempus arcu, non viverra magna malesuada non. Fusce magna sapien, bibendum sed mauris vitae, pellentesque euismod risus. Cras volutpat libero ligula, eu molestie lectus semper non. Vestibulum euismod ante porttitor ex euismod, et vestibulum ipsum dictum. Nunc ullamcorper venenatis diam. Morbi mattis auctor purus id dignissim. Fusce varius turpis a lectus pretium elementum. Donec et sapien ipsum. Donec molestie nunc vitae turpis vehicula, non gravida libero cursus. </p>
+    <h3>Add a comment</h3>
+    <form id = "form" action="/add-comment" method="post">
+      <fieldset class="form-group">
+        <label>Your name</label>
+        <input type="text" name="name" class="form-control" placeholder="Enter your name">
+      </fieldset>
+      <fieldset class="form-group">
+        <label>Comment</label>
+        <textarea id="content-area" class="form-control" name="content" rows="7" placeholder = "Enter your comment"></textarea>
+      </fieldset>
+      <input type="hidden" name="post-id" value = {{selected}} />
+      <button type="submit" class="btn btn-primary btn-lg pull-right">Submit</button>
+    </form>
   </div>
 
   <div id="parent-child-column" class = "col-sm-4">
