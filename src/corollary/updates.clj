@@ -80,3 +80,7 @@
       (redirect "/recent":see-other)
       (redirect (str "/selected?selected=" (:id (first parents))) :see-other))))
 
+(defn create-comment [{:keys [name content post-id]}]
+  (println name content)
+  (redirect (str "/selected?selected=" post-id) :see-other))
+

@@ -58,6 +58,7 @@
                ("/navigate" views/navigate-page))
              (POST
                ("/add-post" updates/create-post)
+               ("/add-comment" updates/create-comment)
                ("/update-post" updates/update-post)
                ("/delete-post" updates/delete-post)
                ("/preview-html" ajax/get-preview-html)))
