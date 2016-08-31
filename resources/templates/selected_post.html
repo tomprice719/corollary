@@ -12,7 +12,12 @@
       <a href ="/edit?selected={{selected}}" class="btn btn-primary btn-xs">edit</a>
       <a href="#confirm-delete" class="btn btn-primary btn-xs" data-toggle="modal">delete</a>
     </div>
-    {{post.processed_content|safe}}
+
+    <div id = "post-content">
+      <div id = "popover-container"></div>
+      {{post.processed_content|safe}}
+    </div>
+
     <hr>
     {% if comments %}
       <h3 style = "padding-bottom: 0.5em">Comments</h3>
@@ -157,10 +162,16 @@
     $.post("/preview-html", {selection: $("#comment-content-area").val()}, function(data) {
       $("#preview-author").html($("#comment-author").val());
       $("#preview-content").html(data);
-      MathJax.Hub.Queue(["Typeset",MathJax.Hub,"previewBody"]);
+      MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
       $("#previewModal").modal();
     }, "html");
   });
+
+  $("#post-content a").each(function() {
+    $(this).popover({content: '<span class="math">\\(P(n) = n^2 + n + 1\\)</span>', trigger: "hover", html:true, container: "#popover-container"});
+    $(this).mouseover(function () { MathJax.Hub.Queue(["Typeset",MathJax.Hub, "popover-container"])});
+  });
+
 </script>
 
 {% endblock %}
