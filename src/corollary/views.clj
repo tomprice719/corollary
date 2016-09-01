@@ -33,9 +33,18 @@
 (defn get-post [id] ;;Get rid of having to call first
   (first
     (query db
-           ["select title, author, date, raw_content, processed_content from posts where id = ?"
+           ["select title, author, date, raw_content, processed_content, hover_text from posts where id = ?"
             (Integer. id)]
            {:row-fn #(update % :date date-string)})))
+
+(defn post-href [post-id]
+  (str "/selected?selected=" post-id))
+
+(defn link-map []
+  (query db
+         ["select id, hover_text from posts where hover_text is not null"]
+         {:row-fn        #(vector (-> % :id post-href) (:hover_text %))
+          :result-set-fn #(apply hash-map (flatten %))}))
 
 (defn get-posts [page-num]
   (query db
@@ -80,11 +89,12 @@
 (defn selected-post [{:keys [selected] :as params}]
   (render-file "templates/selected_post.html"
                (merge params
-                      {:post (get-post selected)
-                       :page "selected"
-                       :parents (not-empty (get-parents selected identity))
+                      {:post     (get-post selected)
+                       :page     "selected"
+                       :parents  (not-empty (get-parents selected identity))
                        :children (not-empty (get-children selected identity))
-                       :comments (not-empty (get-comments selected))})))
+                       :comments (not-empty (get-comments selected))
+                       :link-map (cheshire/generate-string (link-map))})))
 
 (defn compose-post [{:keys [parent-title]}]
   (render-file "templates/compose_post.html"
@@ -95,7 +105,7 @@
                 (cheshire/generate-string (get-title-map))}))
 
 (defn edit-post [{:keys [selected]}]
-  (let [{:keys [title author raw_content]} (get-post selected)
+  (let [{:keys [title author raw_content hover_text]} (get-post selected)
         parents (get-parents selected identity)
         children (get-children selected identity)]
     (render-file "templates/compose_post.html"
@@ -103,6 +113,7 @@
                   :title title
                   :author author
                   :content raw_content
+                  :hover_text hover_text
                   :edit true
                   :form-action "/update-post"
                   :parents (cheshire/generate-string parents)

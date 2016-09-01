@@ -36,12 +36,10 @@
       <fieldset class="form-group">
         <label>Comment</label>
         <textarea id="comment-content-area" class="form-control" name="content" rows="7" placeholder = "Enter your comment"></textarea>
-        <small class="text-muted">
-          The markup language used is Pandoc-Markdown.
-          <a href = "http://www.unexpected-vortices.com/sw/rippledoc/quick-markdown-example.html">
-            See here for an example.
-          </a>
-        </small>
+        The markup language used is Pandoc-Markdown.
+        <a href = "http://www.unexpected-vortices.com/sw/rippledoc/quick-markdown-example.html">
+          See here for an example.
+        </a>
       </fieldset>
       <input type="hidden" name="post-id" value = {{selected}} />
       <div class="clearfix">
@@ -139,7 +137,16 @@
 <script src='typeahead.bundle.js'></script>
 
 <script language = "javascript">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      processEscapes: true
+    }
+  });
+
   linkTypes = [];
+  linkMap = {{link-map|safe}};
 
   // constructs the suggestion engine for link types
   var linkTypeBH = new Bloodhound({
@@ -168,8 +175,11 @@
   });
 
   $("#post-content a").each(function() {
-    $(this).popover({content: '<span class="math">\\(P(n) = n^2 + n + 1\\)</span>', trigger: "hover", html:true, container: "#popover-container"});
-    $(this).mouseover(function () { MathJax.Hub.Queue(["Typeset",MathJax.Hub, "popover-container"])});
+    var href = $(this).attr("href");
+    if (href in linkMap) {
+      $(this).popover({content: linkMap[href], trigger: "hover", html:true, container: "#popover-container", placement: "bottom"});
+      $(this).mouseover(function () { MathJax.Hub.Queue(["Typeset",MathJax.Hub, "popover-container"])});
+    }
   });
 
 </script>

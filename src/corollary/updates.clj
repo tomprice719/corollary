@@ -8,7 +8,7 @@
            [sqlingvo.core :as sql]
            [corollary.queries :refer [pandoc get-parents]]
            [clojure.pprint :refer [pprint]]
-           [clojure.string :refer [trim]]))
+           [clojure.string :refer [trim blank?]]))
 
 ;(defn local-pandoc [input]
 ;  (:out (clojure.java.shell/sh "pandoc" "-f" "markdown-raw_html" "--mathjax" :in input))) ;; you MUST escape raw HTML
@@ -45,25 +45,27 @@
 (defn delete-children [parent-id]
   (jdbc/delete! db :edges ["parent_id = ?" (Integer. parent-id)]))
 
-(defn create-post [{:keys [name title content parents children]}]
+(defn create-post [{:keys [name title content hover-text parents children]}]
   (let [id (next-post-id)]
     (jdbc/insert! db :posts
-                  {:id id
-                   :author name
-                   :title (trim title)
-                   :date (utils/now)
-                   :raw_content content
-                   :processed_content (pandoc content)})
+                  {:id                id
+                   :author            name
+                   :title             (trim title)
+                   :date              (utils/now)
+                   :raw_content       content
+                   :processed_content (pandoc content)
+                   :hover_text        (if (blank? hover-text) nil hover-text)})
     (add-parents parents id)
     (add-children children id)
     (redirect (str "/selected?selected=" id) :see-other)))
 
-(defn update-post [{:keys [content parents children id title name]}]
+(defn update-post [{:keys [content hover-text parents children id title name]}]
   (jdbc/update! db :posts
-                {:author name
-                 :title title
-                 :raw_content content
-                 :processed_content (pandoc content)}
+                {:author            name
+                 :title             title
+                 :raw_content       content
+                 :processed_content (pandoc content)
+                 :hover_text        (if (blank? hover-text) nil hover-text)}
                 ["id = ?" (Integer. id)])
   (delete-parents id)
   (delete-children id)
