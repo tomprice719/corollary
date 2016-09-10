@@ -237,7 +237,7 @@
   $("#post-content a").each(function() {
     var href = $(this).attr("href");
     if (href in linkMap) {
-      $(this).popover({content: linkMap[href], trigger: "hover", html:true, container: "#popover-container", placement: "bottom"});
+      $(this).popover({content: linkMap[href].content, title: linkMap[href].title, trigger: "hover", html:true, container: "#popover-container", placement: "bottom"});
       $(this).mouseover(function () { MathJax.Hub.Queue(["Typeset",MathJax.Hub, "popover-container"])});
     }
   });

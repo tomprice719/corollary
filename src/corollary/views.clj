@@ -41,8 +41,10 @@
 
 (defn link-map []
   (query db
-         ["select id, hover_text from posts where hover_text is not null"]
-         {:row-fn        #(vector (-> % :id post-href) (:hover_text %))
+         ["select id, title, hover_text from posts where hover_text is not null"]
+         {:row-fn        #(vector (-> % :id post-href)
+                                  {:content (:hover_text %)
+                                   :title   (:title %)})
           :result-set-fn #(apply hash-map (flatten %))}))
 
 (defn get-posts [page-num]
