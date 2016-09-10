@@ -61,6 +61,7 @@
                ("/add-comment" updates/create-comment)
                ("/update-post" updates/update-post)
                ("/delete-post" updates/delete-post)
+               ("/subscribe" updates/create-subscription)
                ("/preview-html" ajax/get-preview-html)))
 
 ;;TODO: get rid of this

@@ -86,7 +86,7 @@
               :page "top-level"
               :path "/top-level"}))))
 
-(defn selected-post [{:keys [selected] :as params}]
+(defn selected-post [{:keys [selected subscribed] :as params}]
   (render-file "templates/selected_post.html"
                (merge params
                       {:post     (get-post selected)
@@ -94,7 +94,8 @@
                        :parents  (not-empty (get-parents selected identity))
                        :children (not-empty (get-children selected identity))
                        :comments (not-empty (get-comments selected))
-                       :link-map (cheshire/generate-string (link-map))})))
+                       :link-map (cheshire/generate-string (link-map))
+                       :subscribed subscribed})))
 
 (defn compose-post [{:keys [parent-title]}]
   (render-file "templates/compose_post.html"

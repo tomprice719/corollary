@@ -91,3 +91,11 @@
                  :post_id (Integer. post-id)})
   (redirect (str "/selected?selected=" post-id "#bottom-comment") :see-other))
 
+(defn create-subscription [{:keys [id email descs]}]
+  (jdbc/insert! db :subscriptions
+                {:post_id     (Integer. id)
+                 :email       email
+                 :descendants (some? descs)
+                 :date        (utils/now)})
+  (redirect (str "/selected?subscribed=true&selected=" id) :see-other))
+

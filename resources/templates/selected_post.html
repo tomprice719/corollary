@@ -11,6 +11,7 @@
       <a href="/compose?parent-title={{post.title}}" class="btn btn-primary btn-xs" data-toggle="modal">New child post</a>
       <a href ="/edit?selected={{selected}}" class="btn btn-primary btn-xs">edit</a>
       <a href="#confirm-delete" class="btn btn-primary btn-xs" data-toggle="modal">delete</a>
+      <a href="#subscribe" class="btn btn-primary btn-xs" data-toggle="modal">subscribe</a>
     </div>
 
     <div id = "post-content">
@@ -28,7 +29,7 @@
     {% endif %}
 
     <h3>Add a comment</h3>
-    <form id = "form" action="/add-comment" method="post">
+    <form action="/add-comment" method="post">
       <fieldset class="form-group">
         <label>Your name</label>
         <input id="comment-author" type="text" name="name" class="form-control" placeholder="Enter your name">
@@ -86,7 +87,8 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        Confirm deletion
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Confirm deletion</h4>
       </div>
       <div class="modal-body">
         Are you sure you want to delete the post "{{post.title}}"?
@@ -98,6 +100,57 @@
           <input class="btn btn-danger btn-ok" type="submit" value="Delete"/>
         </form>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Subscribe modal -->
+<div class="modal fade" id="subscribe" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Subscribe</h4>
+      </div>
+      <form role="form" action="/subscribe" method="post" data-toggle="validator">
+      <div class="modal-body">
+          Provide your email here to get notifications about new activity related to this post.
+          <fieldset class="form-group" style = "padding-top:1em">
+            <input id = "email-input" type="text" name="email" class="form-control" placeholder="Enter your email">
+          </fieldset>
+          <fieldset class="form-group">
+            <input data-match="#email-input" type="text" name="email2" class="form-control" placeholder="Confirm your email">
+            <div class="help-block with-errors"></div>
+          </fieldset>
+          <fieldset class="form-group">
+            <input name="descs" type="checkbox" value = "true" checked>Also get notified about activity on descendants of
+              this post.
+          </fieldset>
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <input type="hidden" name="id" value="{{selected}}" />
+          <input class="btn btn-primary" type="submit" value="Ok"/>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Successfully subscribed modal -->
+<div class="modal fade" id="subscribe-success" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Subscribed successfully</h4>
+      </div>
+        <div class="modal-body">
+          You will now receive email notifications about new activity related to this post.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
     </div>
   </div>
 </div>
@@ -135,8 +188,15 @@
 
 {% block scripts %}
 <script src='typeahead.bundle.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.5/validator.js'></script>
 
 <script language = "javascript">
+
+  {% if subscribed %}
+  $(window).load(function(){
+    $('#subscribe-success').modal('show');
+   });
+  {% endif %}
 
   MathJax.Hub.Config({
     tex2jax: {
