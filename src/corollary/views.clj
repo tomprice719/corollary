@@ -7,7 +7,6 @@
            [clojure.java.jdbc :refer [query]]))
 
 (def posts-per-page 10)
-(def edge-colour "#000000")
 
 (defn date-string [date]
   (let [seconds-diff (quot (- (utils/now) date) 1000)
@@ -126,8 +125,7 @@
   (render-file "templates/tree.html"
                (merge params
                       { :page "tree"
-                        :nodes (tree/draw-data-list selected)
-                        :edge-colour edge-colour})))
+                        :nodes (tree/draw-data-list selected)})))
 
 (defn request-password [wrong-password]
   (render-file "templates/password.html" {:wrong-password wrong-password}))
