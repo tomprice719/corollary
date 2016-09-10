@@ -57,6 +57,7 @@
                    :hover_text        (if (blank? hover-text) nil hover-text)})
     (add-parents parents id)
     (add-children children id)
+    (println "NEW POST " id)
     (redirect (str "/selected?selected=" id) :see-other)))
 
 (defn update-post [{:keys [content hover-text parents children id title name]}]
@@ -89,6 +90,7 @@
                  :raw_content content
                  :processed_content (pandoc content)
                  :post_id (Integer. post-id)})
+  (println "NEW COMMENT " post-id)
   (redirect (str "/selected?selected=" post-id "#bottom-comment") :see-other))
 
 (defn create-subscription [{:keys [id email descs]}]
