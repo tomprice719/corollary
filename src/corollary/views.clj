@@ -32,7 +32,8 @@
 (defn get-post [id] ;;Get rid of having to call first
   (first
     (query db
-           ["select title, author, date, raw_content, processed_content, hover_text from posts where id = ?"
+           ["select title, author, date, raw_content, processed_content, hover_text, projects.id as project, projects.password as password
+            from posts join projects on posts.project_id = projects.id where post.id = ?"
             (Integer. id)]
            {:row-fn #(update % :date date-string)})))
 
@@ -87,16 +88,34 @@
               :page "top-level"
               :path "/top-level"}))))
 
-(defn selected-post [{:keys [selected subscribed] :as params}]
+(defn project-password-key [project]
+  (assert (some? project))
+  (str project "-password"))
+
+(defn selected-post-after-password [params post selected]
   (render-file "templates/selected_post.html"
                (merge params
-                      {:post     (get-post selected)
-                       :page     "selected"
-                       :parents  (not-empty (get-parents selected identity))
-                       :children (not-empty (get-children selected identity))
-                       :comments (not-empty (get-comments selected))
-                       :link-map (cheshire/generate-string (link-map))
-                       :subscribed subscribed})))
+                      {:post       post
+                       :page       "selected"
+                       :parents    (not-empty (get-parents selected identity))
+                       :children   (not-empty (get-children selected identity))
+                       :comments   (not-empty (get-comments selected))
+                       :link-map   (cheshire/generate-string (link-map))
+                       })))
+
+(defn selected-post-request-password [project retry]
+  (render-file "templates/request_password.html"
+               {:password-key (project-password-key project)
+                :retry        retry}))
+
+(defn selected-post [{:keys [selected] :as params}]
+  (let [post (get-post selected)
+        project (:project selected)
+        submitted-password (get params (project-password-key project))
+        true-password (:password post)]
+    (if (= submitted-password true-password)
+      (selected-post-after-password params post selected)
+      (selected-post-request-password project (some? submitted-password)))))
 
 (defn compose-post [{:keys [parent-title]}]
   (render-file "templates/compose_post.html"
@@ -128,6 +147,3 @@
                (merge params
                       { :page "tree"
                         :nodes (tree/draw-data-list selected)})))
-
-(defn request-password [wrong-password]
-  (render-file "templates/password.html" {:wrong-password wrong-password}))
