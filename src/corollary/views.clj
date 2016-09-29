@@ -32,8 +32,8 @@
 (defn get-post [id] ;;Get rid of having to call first
   (first
     (query db
-           ["select title, author, date, raw_content, processed_content, hover_text, projects.id as project, projects.password as password
-            from posts join projects on posts.project_id = projects.id where post.id = ?"
+           ["select title, author, posts.date, raw_content, processed_content, hover_text, projects.id as project, projects.password as password
+            from posts join projects on posts.project_id = projects.id where posts.id = ?"
             (Integer. id)]
            {:row-fn #(update % :date date-string)})))
 
@@ -110,8 +110,8 @@
 
 (defn selected-post [{:keys [selected] :as params}]
   (let [post (get-post selected)
-        project (:project selected)
-        submitted-password (get params (project-password-key project))
+        project (:project post)
+        submitted-password (get-in params [(project-password-key project) :value])
         true-password (:password post)]
     (if (= submitted-password true-password)
       (selected-post-after-password params post selected)
