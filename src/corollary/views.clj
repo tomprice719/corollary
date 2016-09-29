@@ -51,16 +51,17 @@
                                    :title   (:title %)})
           :result-set-fn #(apply hash-map (flatten %))}))
 
-(defn get-posts [page-num]
+(defn get-post-project [post-id]
   (query db
-         ["select title, author, date, id from posts order by date desc limit ? offset ?"
-          posts-per-page
-          (* page-num posts-per-page)]
-         {:row-fn #(update % :date date-string)}))
+         ["select project_id from posts where id = ?"
+          (Integer. post-id)]
+         {:row-fn        :project_id
+          :result-set-fn first}))
 
-(defn get-top-level [page-num]
+(defn get-posts [project-id page-num]
   (query db
-         ["select title, author, date, id from posts where id not in (select child_id from edges group by child_id) order by date desc limit ? offset ?"
+         ["select title, author, date, id from posts where project_id = ? order by date desc limit ? offset ?"
+          (Integer. project-id)
           posts-per-page
           (* page-num posts-per-page)]
          {:row-fn #(update % :date date-string)}))
@@ -71,13 +72,14 @@
           (Integer. post-id)]
          {:row-fn #(update % :date date-string)}))
 
-(defn recent-posts [params]
-  (let [page-num (if-let [pn-str (:page-num params)] (Integer. pn-str) 0)]
+(defn recent-posts [{:keys [page-num selected] :as params}]
+  (let [page-num-int (if page-num (Integer. page-num) 0)
+        project-id (get-post-project selected)]
     (render-file
       "templates/feed.html"
       (merge params
              {:page-num page-num
-              :posts (get-posts page-num)
+              :posts (get-posts project-id page-num-int)
               :page "recent"
               :path "/recent"}))))
 
