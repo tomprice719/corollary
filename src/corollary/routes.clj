@@ -37,7 +37,7 @@
 
 (easy-routes app
              (GET
-               ("/" views/recent-posts)
+               ("/" views/home-page)
                ("/recent" views/recent-posts)
                ("/top-level" views/top-level-posts)
                ("/selected" views/selected-post)

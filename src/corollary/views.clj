@@ -29,6 +29,9 @@
       two-weeks "1 week ago"
       (str (quot seconds-diff 604800) " weeks ago"))))
 
+(defn get-projects []
+  (query db ["select name, posts.id as root from projects join posts on posts.project_id = projects.id and posts.root=true"]))
+
 (defn get-post [id] ;;Get rid of having to call first
   (first
     (query db
@@ -147,3 +150,7 @@
                (merge params
                       { :page "tree"
                         :nodes (tree/draw-data-list selected)})))
+
+(defn home-page [params]
+  (render-file "templates/home.html"
+               {:projects (get-projects)}))
