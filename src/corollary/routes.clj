@@ -39,7 +39,6 @@
              (GET
                ("/" views/home-page)
                ("/recent" views/recent-posts)
-               ("/top-level" views/top-level-posts)
                ("/selected" views/selected-post)
                ("/compose" views/compose-post)
                ("/edit" views/edit-post)

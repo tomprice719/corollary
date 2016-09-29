@@ -81,16 +81,6 @@
               :page "recent"
               :path "/recent"}))))
 
-(defn top-level-posts [params]
-  (let [page-num (if-let [pn-str (:page-num params)] (Integer. pn-str) 0)]
-    (render-file
-      "templates/feed.html"
-      (merge params
-             {:page-num page-num
-              :posts (get-top-level page-num)
-              :page "top-level"
-              :path "/top-level"}))))
-
 (defn project-password-key [project]
   (assert (some? project))
   (str project "-password"))
