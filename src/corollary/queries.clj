@@ -16,14 +16,16 @@
          {:row-fn row-fn}))
 
 (defn get-title-map
-  ([] (reduce (fn [reduction {:keys [title id]}] (assoc reduction title id))
+  ([project-id] (reduce (fn [reduction {:keys [title id]}] (assoc reduction title id))
               {}
               (query db
-                     ["select title, id from posts"])))
-  ([post-id] (reduce (fn [reduction {:keys [title id]}] (assoc reduction title id))
+                     ["select title, id from posts where project_id = ?" project-id])))
+  ([project-id post-id] (reduce (fn [reduction {:keys [title id]}] (assoc reduction title id))
                      {}
                      (query db
-                            ["select title, id from posts where id != ?" (Integer. post-id)]))))
+                            ["select title, id from posts where project_id = ? and id != ?"
+                             project-id
+                             (Integer. post-id)]))))
 
 (defn get-one-title [post-id]
   (first (query db

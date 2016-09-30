@@ -8,7 +8,7 @@
     <h2>{{post.title}}</h2>
     <div id="post-actions">
       Posted by <strong>{{post.author}}</strong>, {{post.date}}.
-      <a href="/compose?parent-title={{post.title}}" class="btn btn-primary btn-xs" data-toggle="modal">New child post</a>
+      <a href="/compose?selected={{selected}}" class="btn btn-primary btn-xs" data-toggle="modal">New child post</a>
       <a href ="/edit?selected={{selected}}" class="btn btn-primary btn-xs">edit</a>
       <a href="#confirm-delete" class="btn btn-primary btn-xs" data-toggle="modal">delete</a>
       <a href="#subscribe" class="btn btn-primary btn-xs" data-toggle="modal">subscribe</a>

@@ -111,19 +111,20 @@
     (if (= submitted-password true-password)
       (selected-post-after-password params post selected)
       (selected-post-request-password project (some? submitted-password)))))
-
-(defn compose-post [{:keys [parent-title]}]
-  (render-file "templates/compose_post.html"
-               {:form-action "/add-post"
-                :parents (if parent-title
-                           (cheshire/generate-string [{:title parent-title}]))
-                :title-map
-                (cheshire/generate-string (get-title-map))}))
+(defn compose-post [{:keys [selected]}]
+  (let [post (get-post selected)]
+    (render-file "templates/compose_post.html"
+                 {:form-action "/add-post"
+                  :parents
+                               (cheshire/generate-string [(select-keys post [:title])])
+                  :title-map
+                               (-> post :project get-title-map cheshire/generate-string)})))
 
 (defn edit-post [{:keys [selected]}]
   (let [{:keys [title author raw_content hover_text]} (get-post selected)
         parents (get-parents selected identity)
-        children (get-children selected identity)]
+        children (get-children selected identity)
+        project (get-post-project selected)]
     (render-file "templates/compose_post.html"
                  {:id selected
                   :title title
@@ -135,7 +136,7 @@
                   :parents (cheshire/generate-string parents)
                   :children (cheshire/generate-string children)
                   :title-map
-                  (cheshire/generate-string (get-title-map selected))})))
+                  (cheshire/generate-string (get-title-map project selected))})))
 
 (defn navigate-page [{:keys [selected] :as params}]
   (render-file "templates/tree.html"
