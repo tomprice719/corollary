@@ -38,24 +38,6 @@
     <label>Hover Text (optional)</label>
     <textarea class="form-control" name="hover-text" rows="5" placeholder = "A short summary of the post, displayed whenever someone hovers over a link to it. Only plain text and latex are allowed here, no markdown.">{{hover_text}}</textarea>
   </fieldset>
-  <div class = "row form-group">
-    <div class="col-sm-6">
-      <h3>
-        Parents
-        <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#addParentModal">Add parent</button>
-      </h3>
-      <ul id = "parents" class = "list-group">
-      </ul>
-    </div>
-    <div class="col-sm-6">
-      <h3>
-        Children
-        <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#addChildModal">Add child</button>
-      </h3>
-      <ul id = "children" class = "list-group">
-      </ul>
-    </div>
-  </div>
 
   <!-- Hidden input to include id of post, for editing an existing post -->
   <input type="hidden" name="id" value="{{id}}" />
@@ -67,18 +49,18 @@
   <button type="submit" class="btn btn-primary btn-lg pull-right">Submit</button>
 </form>
 
-<!-- Add parent modal-->
-<div id="addParentModal" class="modal fade" role="dialog">
+<!-- Change parent modal-->
+<div id="changeParentModal" class="modal fade" role="dialog">
   <div class="modal-dialog">
 
     <!-- Modal content-->
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Add Parent Post</h4>
+        <h4 class="modal-title">Change Parent Post</h4>
       </div>
       <div class="modal-body">
-        <p>Enter the title of the post you would like to add as a parent.</p>
+        <p>Enter the title of the post you would like to make the parent.</p>
         <div id = "new-parent-title">
           <input id="new-parent-title-input" class="typeahead form-control" />
         </div>
@@ -92,30 +74,6 @@
   </div>
 </div>
 
-<!-- Add child modal -->
-<div id="addChildModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Add Child Post</h4>
-      </div>
-      <div class="modal-body">
-        <p>Enter the title of the post you would like to add as a child.</p>
-        <div id = "new-child-title">
-          <input id="new-child-title-input" class="typeahead form-control" />
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button id="add-child" type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-
-  </div>
-</div>
 
 <!-- Add link modal -->
 <div id="addHyperlinkModal" class="modal fade" role="dialog">
@@ -190,33 +148,10 @@
 {% block scripts %}
 <script src='typeahead.bundle.js'></script>
 <script src='underscore.js'></script>
-<script src='backbone.js'></script>
 
 <script language = "javascript">
 
   titleMap = {{title-map|safe}};
-
-  ParentChildView = Backbone.View.extend({
-    tagName: 'li',
-    render: function(){
-      this.$el.html(this.model.attributes['title']);
-      $('<button />', {
-        html: "remove",
-        "class": "btn btn-primary btn-xs destroy pull-right"
-      }).appendTo(this.$el);
-      return this;
-    },
-    events: {
-      'click .destroy': 'destroy'
-    },
-    destroy: function(){
-      this.remove();
-      this.collection.remove(this.model);
-    }
-  });
-
-  parentList = new Backbone.Collection();
-  childList = new Backbone.Collection();
 
   function getSelectionText() {
     // obtain the object reference for the <textarea>
@@ -228,29 +163,6 @@
     // obtain the selected text
     return txtarea.value.substring(start, finish);
   }
-
-  function addParent(title) {
-    var model = new Backbone.Model({title: title, id: titleMap[title]});
-    parentList.add(model);
-    var view = new ParentChildView({collection: parentList,
-                                    model: model,
-                                    className: "list-group-item"});
-    $('#parents').prepend(view.render().el);
-  }
-
-  function addChild(title) {
-    var model = new Backbone.Model({title: title, id: titleMap[title]});
-    childList.add(model);
-    var view = new ParentChildView({collection: childList,
-                                    model: model,
-                                    className: "list-group-item"});
-    $('#children').prepend(view.render().el);
-  }
-
-  $("#add-parent").click(function(){
-    addParent($('#new-parent-title-input').val(), $('#new-parent-link-type-input').val());
-    $('#new-parent-title-input').val('')
-  });
 
   $("#add-child").click(function(){
     addChild($('#new-child-title-input').val(), $('#new-child-link-type-input').val())
@@ -302,9 +214,6 @@
     if($("#title-input").val().trim() in titleMap) {
       alert( "There already exists a post with that title. You need to choose a unique title.");
       event.preventDefault();
-    } else {
-      $("#parents-hidden-input").val(JSON.stringify(parentList));
-      $("#children-hidden-input").val(JSON.stringify(childList));
     }
   });
 
@@ -325,16 +234,6 @@
     source: titleBH
   });
 
-  $('#new-child-title .typeahead').typeahead({
-    hint: true,
-    highlight: true,
-    minLength: 1
-  },
-                                             {
-    name: 'new-child-title',
-    source: titleBH
-  });
-
   $('#hyperlink-post-title .typeahead').typeahead({
     hint: true,
     highlight: true,
@@ -344,18 +243,6 @@
     name: 'new-hyperlink-post-title',
     source: titleBH
   });
-
-  {% if parents %}
-  _.each({{parents|safe}}, function(parent) {
-    addParent(parent.title);
-  });
-  {% endif %}
-
-   {% if children %}
-   _.each({{children|safe}}, function(child) {
-     addChild(child.title);
-   });
-  {% endif %}
 
 </script>
 {% endblock %}

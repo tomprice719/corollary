@@ -6,4 +6,3 @@ CREATE TABLE PROJECTS(
 );
 
 alter table posts add column project_id INTEGER REFERENCES projects;
-alter table posts add column root boolean not null default false;

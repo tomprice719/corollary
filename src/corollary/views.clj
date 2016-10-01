@@ -22,7 +22,6 @@
                (merge params
                       {:post     post
                        :page     "selected"
-                       :parents  (not-empty (get-parents selected identity))
                        :children (not-empty (get-children selected identity))
                        :comments (not-empty (get-comments selected))
                        :link-map (cheshire/generate-string (link-map))

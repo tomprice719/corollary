@@ -29,12 +29,13 @@
       (str (quot seconds-diff 604800) " weeks ago"))))
 
 (defn get-parents [id row-fn]
-  (query db ["select posts.title, posts.date, posts.id from posts join edges on posts.id = edges.parent_id where edges.child_id = ? order by posts.date desc"
+  (query db ["select parent.title, parent.date, parent.id from posts as parent
+              where parent.id = (select child.parent_id from posts as child where child.id = ?)"
              (Integer. id)]
          {:row-fn row-fn}))
 
 (defn get-children [id row-fn]
-  (query db ["select posts.title, posts.date, posts.id from posts join edges on posts.id = edges.child_id where edges.parent_id = ? order by posts.date desc"
+  (query db ["select title, date, id from posts where parent_id = ? order by date desc"
              (Integer. id)]
          {:row-fn row-fn}))
 
@@ -61,13 +62,16 @@
                       {:body input})))
 
 (defn get-projects []
-  (query db ["select name, posts.id as root from projects join posts on posts.project_id = projects.id and posts.root=true"]))
+  (query db ["select name, posts.id as root from projects join posts on posts.project_id = projects.id and posts.parent_id IS NULL"]))
 
-(defn get-post [id] ;;Get rid of having to call first
+(defn get-post [id]                                         ;;Get rid of having to call first
   (first
     (query db
-           ["select title, author, posts.date, raw_content, processed_content, hover_text, projects.id as project, projects.password as password
-            from posts join projects on posts.project_id = projects.id where posts.id = ?"
+           ["select child.title, child.author, child.date, child.raw_content, child.processed_content, child.hover_text, child.parent_id,
+           projects.id as project, projects.password as password,
+           parent.title as parent_title
+           from posts as child join projects on child.project_id = projects.id
+           left join posts as parent on parent.id = child.parent_id where child.id = ?"
             (Integer. id)]
            {:row-fn #(update % :date date-string)})))
 

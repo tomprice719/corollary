@@ -54,18 +54,20 @@
 
   <div id="parent-child-column" class = "col-sm-4">
 
-    <p>Parents:
-    {% if parents %}
-    {% for parent in parents %}
+    {% if post.parent_id %}
+    <p>
+    Parents:
     </p>
     <p>
-      <a href="/selected?selected={{parent.id}}">{{parent.title}}</a>
+      <a href="/selected?selected={{post.parent_id}}">{{post.parent_title}}</a>
     </p>
-    {% endfor %}
+
     {% else %}
-    None
+    <p>
+      Root Post
     </p>
     {% endif %}
+
     <p>Children:
     {% if children %}
     </p>
