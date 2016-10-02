@@ -18,8 +18,8 @@
 
 (defn create-post [{:keys [name title content hover-text parent-id] :as params}]
   (let [id (next-post-id)
-        post (get-post parent-id)]
-    (assert (= (password-status post params) :correct))
+        parent (get-post parent-id)]
+    (assert (= (password-status parent params) :correct))
     (jdbc/insert! db :posts
                   {:id                id
                    :author            name
@@ -29,17 +29,15 @@
                    :processed_content (pandoc content)
                    :hover_text        (if (blank? hover-text) nil hover-text)
                    :parent_id parent-id
-                   :project_id (:project post)})
+                   :project_id (:project parent)})
     (println "NEW POST " id)
     (redirect (str "/selected?selected=" id) :see-other)))
 
 (defn update-post [{:keys [content hover-text id title name parent-id] :as params}]
   (let [post (get-post id)
         parent (get-post parent-id)]
-    (assert (=
-              (password-status post params)
-              (password-status parent params)
-              :correct)))
+    (assert (= (password-status post params) :correct))
+    (assert (= (:project post) (:project parent))))
   (jdbc/update! db :posts
                 {:author            name
                  :title             title
