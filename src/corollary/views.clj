@@ -3,7 +3,7 @@
            [corollary.queries :refer :all]
            [cheshire.core :as cheshire]
            [corollary.tree :as tree]
-           [corollary.utils :refer [db] :as utils]
+           [corollary.utils :refer [db project-password-key] :as utils]
            [clojure.java.jdbc :refer [query]]))
 
 (defn recent-posts [{:keys [page-num post] :as params}]
@@ -28,30 +28,27 @@
                        })))
 
 (defn compose-post [{:keys [selected]}]
-  (let [post (get-post selected)]
+  (let [parent (get-post selected)]
     (render-file "templates/compose_post.html"
-                 {:form-action "/add-post"
-                  :parents
-                               (cheshire/generate-string [(select-keys post [:title])])
+                 {:parent-title (:title parent)
+                  :parent-id    selected
                   :title-map
-                               (-> post :project get-title-map cheshire/generate-string)})))
+                                (-> parent :project get-title-map cheshire/generate-string)})))
 
 (defn edit-post [{:keys [selected post]}]
   (let [{:keys [title author raw_content hover_text project]} post
-        parents (get-parents selected identity)
-        children (get-children selected identity)]
+        post (get-post selected)]
     (render-file "templates/compose_post.html"
-                 {:id selected
-                  :title title
-                  :author author
-                  :content raw_content
-                  :hover_text hover_text
-                  :edit true
-                  :form-action "/update-post"
-                  :parents (cheshire/generate-string parents)
-                  :children (cheshire/generate-string children)
+                 {:id           selected
+                  :title        title
+                  :author       author
+                  :content      raw_content
+                  :hover_text   hover_text
+                  :edit         true
+                  :parent-title (:parent_title post)
+                  :parent-id    (:parent_id post)
                   :title-map
-                  (cheshire/generate-string (get-title-map project selected))})))
+                                (cheshire/generate-string (get-title-map project selected))})))
 
 (defn navigate-page [{:keys [selected] :as params}]
   (render-file "templates/tree.html"
@@ -62,3 +59,8 @@
 (defn home-page [params]
   (render-file "templates/home.html"
                {:projects (get-projects)}))
+
+(defn request-password [project retry]
+  (render-file "templates/request_password.html"
+               {:password-key (project-password-key project)
+                :retry        retry}))

@@ -10,7 +10,9 @@
   {% endif %}
 </h1>
 
-<form id = "form" action="{{form-action}}" method="post">
+<form id = "form"
+      action="{% if edit %}/update-post{% else %}/add-post{% endif %}"
+      method="post">
   <fieldset class="form-group">
     <label>Title</label>
     <input type="text" name="title" id="title-input" class="form-control" placeholder="Enter title" value = "{{title}}">
@@ -18,6 +20,11 @@
   <fieldset class="form-group">
     <label>Your name</label>
     <input type="text" name="name" class="form-control" placeholder="Enter name" value="{{author}}">
+  </fieldset>
+  <fieldset class="form-group">
+    <label>Parent post:</label>
+    <label id = "parent-label" style="padding-right: 1em">{{parent-title}}</label>
+    <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#changeParentModal">Change</button>
   </fieldset>
   <fieldset class="form-group">
     <label>Content</label>
@@ -42,9 +49,8 @@
   <!-- Hidden input to include id of post, for editing an existing post -->
   <input type="hidden" name="id" value="{{id}}" />
 
-  <!-- Hidden inputs to send parents / children -->
-  <input type="hidden" name="parents" id = "parents-hidden-input"/>
-  <input type="hidden" name="children" id = "children-hidden-input"/>
+  <!-- Hidden inputs to send parent -->
+  <input type="hidden" name="parent-id" id = "parent-hidden-input" value="{{parent-id}}"/>
 
   <button type="submit" class="btn btn-primary btn-lg pull-right">Submit</button>
 </form>
@@ -66,7 +72,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button id="add-parent" type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+        <button id="change-parent-ok" type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div>
@@ -185,6 +191,17 @@
     // erase inputs
     $('#hyperlink-post-title-input').val('');
     $('#hyperlink-label-input').val('');
+  });
+
+  $("#change-parent-ok").click(function(){
+    var title = $('#new-parent-title-input').val();
+    if(!(title in titleMap)) {
+      alert('Oops, there is no post with the title "' + title + '"!');
+      return;
+    }
+    var parentId = titleMap[title];
+    $('#parent-label').text(title);
+    $('#parent-hidden-input').val(parentId);
   });
 
   $("#hyperlink-open").click(function(){

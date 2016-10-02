@@ -3,9 +3,10 @@
             [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
             [compojure.route :as route]
             [compojure.handler :refer [site]] ;; DEPRECATED
-            [corollary.queries :refer :all]
+            [corollary.utils :refer [password-status project-password-key]]
             [corollary.views :as views]
             [corollary.updates :as updates]
+            [corollary.queries :refer :all]
             [clojure.core :refer [rand-int]]
             [ring.middleware.session.cookie :refer [cookie-store]]
             [environ.core :refer [env]]
@@ -16,25 +17,15 @@
 
 ;;TODO: you want to get an alert when you enter the wrong password
 
-(defn project-password-key [project]
-  (assert (some? project))
-  (str project "-password"))
-
-(defn request-password [project retry]
-  (render-file "templates/request_password.html"
-               {:password-key (project-password-key project)
-                :retry        retry}))
-
 (defn page-wrapper [page-handler {:keys [selected] :as params}]
   (if selected
     (let [post (get-post selected)
           project (:project post)
-          submitted-password (get-in params [(project-password-key project) :value])
-          true-password (:password post)
           params-with-post (assoc params :post post)]
-      (if (= submitted-password true-password)
-        (page-handler params-with-post)
-        (request-password project (some? submitted-password))))
+      (case (password-status post params)
+        :correct (page-handler params-with-post)
+        :incorrect (views/request-password project true)
+        :empty (views/request-password project false)))
     (page-handler params)))
 
 (defn get-params [request]
