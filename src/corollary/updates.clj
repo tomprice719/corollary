@@ -28,8 +28,8 @@
                    :raw_content       content
                    :processed_content (pandoc content)
                    :hover_text        (if (blank? hover-text) nil hover-text)
-                   :parent_id parent-id
-                   :project_id (:project parent)})
+                   :parent_id         (Integer. parent-id)
+                   :project_id        (:project parent)})
     (println "NEW POST " id)
     (redirect (str "/selected?selected=" id) :see-other)))
 
@@ -44,7 +44,7 @@
                  :raw_content       content
                  :processed_content (pandoc content)
                  :hover_text        (if (blank? hover-text) nil hover-text)
-                 :parent_id parent-id
+                 :parent_id         (Integer. parent-id)
                  }
                 ["id = ?" (Integer. id)])
   (redirect (str "/selected?selected=" id) :see-other))
