@@ -24,7 +24,7 @@
                        :page     "selected"
                        :children (not-empty (get-children selected identity))
                        :comments (not-empty (get-comments selected))
-                       :link-map (cheshire/generate-string (link-map))
+                       :link-map (cheshire/generate-string (link-map (:project post)))
                        })))
 
 (defn compose-post [{:keys [selected]}]

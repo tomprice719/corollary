@@ -78,9 +78,10 @@
 (defn post-href [post-id]
   (str "/selected?selected=" post-id))
 
-(defn link-map []
+(defn link-map [project-id]
   (query db
-         ["select id, title, hover_text from posts where hover_text is not null"]
+         ["select id, title, hover_text from posts where hover_text is not null and project_id = ?"
+          (Integer. project-id)]
          {:row-fn        #(vector (-> % :id post-href)
                                   {:content (:hover_text %)
                                    :title   (:title %)})
