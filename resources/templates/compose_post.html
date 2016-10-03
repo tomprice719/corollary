@@ -21,11 +21,17 @@
     <label>Your name</label>
     <input type="text" name="name" class="form-control" placeholder="Enter name" value="{{author}}">
   </fieldset>
+  {% if parent-id %}
   <fieldset class="form-group">
     <label>Parent post:</label>
     <label id = "parent-label" style="padding-right: 1em">{{parent-title}}</label>
     <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#changeParentModal">Change</button>
   </fieldset>
+
+  <!-- Hidden input to send parent id -->
+  <input type="hidden" name="parent-id" id = "parent-hidden-input" value="{{parent-id}}"/>
+
+  {% endif %}
   <fieldset class="form-group">
     <label>Content</label>
     <textarea id="content-area" class="form-control" name="content" rows="15" placeholder = "Enter content">{{content}}</textarea>
@@ -48,9 +54,6 @@
 
   <!-- Hidden input to include id of post, for editing an existing post -->
   <input type="hidden" name="id" value="{{id}}" />
-
-  <!-- Hidden inputs to send parent -->
-  <input type="hidden" name="parent-id" id = "parent-hidden-input" value="{{parent-id}}"/>
 
   <button type="submit" class="btn btn-primary btn-lg pull-right">Submit</button>
 </form>

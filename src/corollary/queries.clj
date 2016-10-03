@@ -62,7 +62,7 @@
                       {:body input})))
 
 (defn get-projects []
-  (query db ["select name, posts.id as root from projects join posts on posts.project_id = projects.id and posts.parent_id IS NULL"]))
+  (query db ["select posts.title, posts.id as root from projects join posts on posts.project_id = projects.id and posts.parent_id IS NULL"]))
 
 (defn get-post [id]                                         ;;Get rid of having to call first
   (first
