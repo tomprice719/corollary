@@ -15,8 +15,6 @@
 
 ;;Is compojure even doing anything for you?
 
-;;TODO: you want to get an alert when you enter the wrong password
-
 (defn page-wrapper [page-handler {:keys [selected] :as params}]
   (if selected
     (let [post (get-post selected)
