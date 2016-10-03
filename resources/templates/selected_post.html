@@ -10,7 +10,9 @@
       Posted by <strong>{{post.author}}</strong>, {{post.date}}.
       <a href="/compose?selected={{selected}}" class="btn btn-primary btn-xs" data-toggle="modal">New child post</a>
       <a href ="/edit?selected={{selected}}" class="btn btn-primary btn-xs">edit</a>
+      {% if post.parent_id %}
       <a href="#confirm-delete" class="btn btn-primary btn-xs" data-toggle="modal">delete</a>
+      {% endif %}
       <a href="#subscribe" class="btn btn-primary btn-xs" data-toggle="modal">subscribe</a>
     </div>
 
@@ -93,7 +95,7 @@
         <h4 class="modal-title">Confirm deletion</h4>
       </div>
       <div class="modal-body">
-        Are you sure you want to delete the post "{{post.title}}"?
+        Are you sure you want to delete the post "{{post.title}}"? This will also delete all descendants of this post.
       </div>
       <div class="modal-footer">
         <form action="/delete-post" method="post">

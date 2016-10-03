@@ -49,17 +49,17 @@
                 ["id = ?" (Integer. id)])
   (redirect (str "/selected?selected=" id) :see-other))
 
-(defn delete-post [{:keys [id]}]
-  (jdbc/delete! db :posts ["id = ?" (Integer. id)])
-  (redirect (str "/selected?selected=" (:id (first parents))) :see-other))
+; (defn delete-post [{:keys [id]}]
+;  (jdbc/delete! db :posts ["id = ?" (Integer. id)])
+;  (redirect (str "/selected?selected=" (:parent post)) :see-other))
 
 (defn create-comment [{:keys [name content post-id]}]
   (jdbc/insert! db :comments
-                {:author name
-                 :date (utils/now)
-                 :raw_content content
+                {:author            name
+                 :date              (utils/now)
+                 :raw_content       content
                  :processed_content (pandoc content)
-                 :post_id (Integer. post-id)})
+                 :post_id           (Integer. post-id)})
   (println "NEW COMMENT " post-id)
   (redirect (str "/selected?selected=" post-id "#bottom-comment") :see-other))
 
@@ -70,4 +70,13 @@
                  :descendants (some? descs)
                  :date        (utils/now)})
   (redirect (str "/selected?subscribed=true&selected=" id) :see-other))
+
+(defn delete-post [{:keys [id]}]
+  (let [post (get-post id)
+        int-id (Integer. id)]
+    (-> post :parent_id some? assert)
+    (get-children id delete-post)
+    (jdbc/delete! db :comments ["post_id = ?" int-id])
+    (jdbc/delete! db :posts ["id = ?" int-id])
+    (redirect (str "/selected?selected=" (:parent_id post)) :see-other)))
 

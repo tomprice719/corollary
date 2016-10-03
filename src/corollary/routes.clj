@@ -22,10 +22,12 @@
     (let [post (get-post selected)
           project (:project post)
           params-with-post (assoc params :post post)]
-      (case (password-status post params)
-        :correct (page-handler params-with-post)
-        :incorrect (views/request-password project true)
-        :empty (views/request-password project false)))
+      (if post
+        (case (password-status post params)
+          :correct (page-handler params-with-post)
+          :incorrect (views/request-password project true)
+          :empty (views/request-password project false))
+        (route/not-found "Page not found")))
     (page-handler params)))
 
 (defn get-params [request]
