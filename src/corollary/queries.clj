@@ -65,15 +65,15 @@
   (query db ["select posts.title, posts.id as root from projects join posts on posts.project_id = projects.id and posts.parent_id IS NULL"]))
 
 (defn get-post [id]                                         ;;Get rid of having to call first
-  (first
-    (query db
-           ["select child.title, child.author, child.date, child.raw_content, child.processed_content, child.hover_text, child.parent_id,
+  (query db
+         ["select child.title, child.author, child.date, child.raw_content, child.processed_content, child.hover_text, child.parent_id,
            projects.id as project, projects.password as password,
            parent.title as parent_title
            from posts as child join projects on child.project_id = projects.id
            left join posts as parent on parent.id = child.parent_id where child.id = ?"
-            (Integer. id)]
-           {:row-fn #(update % :date date-string)})))
+          (Integer. id)]
+         {:row-fn        #(update % :date date-string)
+          :result-set-fn first}))
 
 (defn post-href [post-id]
   (str "/selected?selected=" post-id))
