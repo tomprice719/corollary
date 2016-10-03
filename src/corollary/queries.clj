@@ -68,9 +68,12 @@
   (query db
          ["select child.title, child.author, child.date, child.raw_content, child.processed_content, child.hover_text, child.parent_id,
            projects.id as project, projects.password as password,
-           parent.title as parent_title
+           parent.title as parent_title,
+           project_root.title as project_title
            from posts as child join projects on child.project_id = projects.id
-           left join posts as parent on parent.id = child.parent_id where child.id = ?"
+           left join posts as parent on parent.id = child.parent_id
+           join posts as project_root on project_root.project_id = projects.id and project_root.parent_id IS NULL
+           where child.id = ?"
           (Integer. id)]
          {:row-fn        #(update % :date date-string)
           :result-set-fn first}))

@@ -54,7 +54,7 @@
                ("/" views/home-page)
                ("/recent" views/recent-posts)
                ("/selected" views/selected-post)
-               ("/compose" views/compose-post)
+               ("/create-child" views/create-child)
                ("/edit" views/edit-post)
                ("/navigate" views/navigate-page))
              (POST

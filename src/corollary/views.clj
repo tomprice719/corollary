@@ -20,26 +20,25 @@
 (defn selected-post [{:keys [post selected] :as params}]
   (render-file "templates/selected_post.html"
                (merge params
-                      {:post     post
-                       :page     "selected"
+                      {:page     "selected"
                        :children (not-empty (get-children selected identity))
                        :comments (not-empty (get-comments selected))
                        :link-map (cheshire/generate-string (link-map (:project post)))
                        })))
 
-(defn compose-post [{:keys [selected]}]
-  (let [parent (get-post selected)]
-    (render-file "templates/compose_post.html"
-                 {:parent-title (:title parent)
-                  :parent-id    selected
-                  :title-map
-                                (-> parent :project get-title-map cheshire/generate-string)})))
+(defn create-child [{:keys [post selected]}]
+  (render-file "templates/compose_post.html"
+               {:post post
+                :parent-title (:title post)
+                :parent-id    selected
+                :title-map
+                              (-> post :project get-title-map cheshire/generate-string)}))
 
 (defn edit-post [{:keys [selected post]}]
-  (let [{:keys [title author raw_content hover_text project]} post
-        post (get-post selected)]
+  (let [{:keys [title author raw_content hover_text project]} post]
     (render-file "templates/compose_post.html"
-                 {:id           selected
+                 {:post         post
+                  :id           selected
                   :title        title
                   :author       author
                   :content      raw_content
