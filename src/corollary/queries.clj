@@ -78,14 +78,14 @@
          {:row-fn        #(update % :date date-string)
           :result-set-fn first}))
 
-(defn post-href [post-id]
-  (str "/selected?selected=" post-id))
+(defn post-href [post-id page]
+  (str "/" page "?selected=" post-id))
 
-(defn link-map [project-id]
+(defn link-map [project-id page]
   (query db
          ["select id, title, hover_text from posts where hover_text is not null and project_id = ?"
           (Integer. project-id)]
-         {:row-fn        #(vector (-> % :id post-href)
+         {:row-fn        #(vector (-> % :id (post-href page))
                                   {:content (:hover_text %)
                                    :title   (:title %)})
           :result-set-fn #(apply hash-map (flatten %))}))

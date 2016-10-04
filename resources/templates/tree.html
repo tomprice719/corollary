@@ -1,7 +1,8 @@
 {% extends "templates/base_pills.html" %}
 
 {% block content %}
-<svg width="1200" height="1200" id="post-tree"
+<div id = "popover-container"></div>
+<svg id="nav-tree" width="1200" height="1200" id="post-tree"
      xmlns:xlink="http://www.w3.org/1999/xlink">
 
   {% for node in nodes %}
@@ -29,5 +30,23 @@
 
   {% endfor %}
 </svg>
+{% endblock %}
+
+{% block scripts %}
+
+<script language = "javascript">
+
+  linkMap = {{link-map|safe}};
+
+   $("#nav-tree a").each(function() {
+    var href = $(this).attr("xlink:href");
+    if (href in linkMap) {
+      $(this).popover({content: linkMap[href].content, trigger: "hover", html:true, container: "#popover-container", placement: "bottom"});
+      $(this).mouseover(function () { MathJax.Hub.Queue(["Typeset",MathJax.Hub, "popover-container"])});
+    }
+  });
+
+</script>
+
 {% endblock %}
 
