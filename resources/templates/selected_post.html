@@ -5,7 +5,7 @@
 {% if post %}
 <div class = "row">
   <div class = "col-sm-8">
-    <h2>{{post.title}}</h2>
+    <h2>{{post.title}} {% if not post.parent_id %}(project root){% endif %}</h2>
     <div id="post-actions">
       Posted by <strong>{{post.author}}</strong>, {{post.date}}.
       <a href="/create-child?selected={{selected}}" class="btn btn-primary btn-xs" data-toggle="modal">New child post</a>
@@ -57,15 +57,10 @@
 
     {% if post.parent_id %}
     <p>
-    Parents:
+    Parent:
     </p>
     <p>
       <a href="/selected?selected={{post.parent_id}}">{{post.parent_title}}</a>
-    </p>
-
-    {% else %}
-    <p>
-      Root Post
     </p>
     {% endif %}
 
