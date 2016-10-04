@@ -41,9 +41,7 @@
       <div id="navbar" class="collapse navbar-collapse">
         <ul class="nav navbar-nav navbar-right">
           <li>
-            <p class = "navbar-text">
-              Current project: {{post.project_title}}
-            </p>
+            <a href = "/selected?selected={{post.root_post_id}}">Current project: {{post.project_title}}</a>
           </li>
           <li><a data-toggle="modal" href="#subscribe">Subscribe to email notifications</a></li>
           <li><a href="#">Log out</a></li>

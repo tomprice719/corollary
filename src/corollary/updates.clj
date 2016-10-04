@@ -64,7 +64,7 @@
   (redirect (str "/selected?selected=" post-id "#bottom-comment") :see-other))
 
 (defn create-subscription [{:keys [id email redirect-url selected]}]
-  (println "REDIRECT-URL" redirect-url)
+  (println "SUBSCRIPTION" email id)
   (jdbc/insert! db :subscriptions
                 {:post_id     (Integer. id)
                  :email       email
