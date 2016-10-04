@@ -26,28 +26,33 @@
                        :link-map (cheshire/generate-string (link-map (:project post)))
                        })))
 
-(defn create-child [{:keys [post selected]}]
-  (render-file "templates/compose_post.html"
-               {:post post
-                :parent-title (:title post)
-                :parent-id    selected
-                :title-map
-                              (-> post :project get-title-map cheshire/generate-string)}))
 
-(defn edit-post [{:keys [selected post]}]
+;;TODO: remove redundant keys
+(defn create-child [{:keys [post selected] :as params}]
+  (render-file "templates/compose_post.html"
+               (merge params
+                      {:post         post
+                       :parent-title (:title post)
+                       :parent-id    selected
+                       :title-map
+                                     (-> post :project get-title-map cheshire/generate-string)})))
+
+;;TODO: remove redundant keys
+(defn edit-post [{:keys [selected post] :as params}]
   (let [{:keys [title author raw_content hover_text project]} post]
     (render-file "templates/compose_post.html"
-                 {:post         post
-                  :id           selected
-                  :title        title
-                  :author       author
-                  :content      raw_content
-                  :hover_text   hover_text
-                  :edit         true
-                  :parent-title (:parent_title post)
-                  :parent-id    (:parent_id post)
-                  :title-map
-                                (cheshire/generate-string (get-title-map project selected))})))
+                 (merge params
+                        {:post         post
+                         :id           selected
+                         :title        title
+                         :author       author
+                         :content      raw_content
+                         :hover_text   hover_text
+                         :edit         true
+                         :parent-title (:parent_title post)
+                         :parent-id    (:parent_id post)
+                         :title-map
+                                       (cheshire/generate-string (get-title-map project selected))}))))
 
 (defn navigate-page [{:keys [selected] :as params}]
   (render-file "templates/tree.html"

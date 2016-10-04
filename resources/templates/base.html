@@ -45,7 +45,7 @@
               Current project: {{post.project_title}}
             </p>
           </li>
-          <li><a href="#">Subscribe to email notifications</a></li>
+          <li><a data-toggle="modal" href="#subscribe">Subscribe to email notifications</a></li>
           <li><a href="#">Log out</a></li>
         </ul>
       </div>
@@ -61,6 +61,58 @@
       {% block content %}
       {% endblock %}
 
+      <!-- Subscribe modal -->
+      <div class="modal fade" id="subscribe" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Subscribe to <i>{{post.project_title}}</i></h4>
+            </div>
+            <form role="form" action="/subscribe" method="post" data-toggle="validator">
+              <div class="modal-body">
+                Provide your email here to get notifications about new activity in this project. <br>
+                You can unsubscribe at any time by sending a message to unsubscribe@corollary.io.
+                <fieldset class="form-group" style = "padding-top:1em">
+                  <input id = "email-input" type="text" name="email" class="form-control" placeholder="Enter your email">
+                </fieldset>
+                <fieldset class="form-group">
+                  <input data-match="#email-input" type="text" name="email2" class="form-control" placeholder="Confirm your email">
+                  <div class="help-block with-errors"></div>
+                </fieldset>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <input type="hidden" name="id" value="{{post.root_post_id}}" />
+                <input type="hidden" name="redirect-url" id="redirect-url-hidden-input" />
+                <input type="hidden" name="selected" value="{{selected}}" />
+                <input class="btn btn-primary" type="submit" value="Ok"/>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Successfully subscribed modal -->
+      <div class="modal fade" id="subscribe-success" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Subscribed successfully</h4>
+            </div>
+            <div class="modal-body">
+              You will now receive email notifications about new activity in this project. <br>
+              You can unsubscribe at any time by sending a message to unsubscribe@corollary.io.
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
     </div><!-- /.container -->
 
     <script src="tether.min.js"></script>
@@ -68,7 +120,19 @@
     <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
     <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.5/validator.js'></script>
 
+    <script language = "javascript">
+
+        {% if subscribed %}
+        $(window).load(function(){
+        $('#subscribe-success').modal('show');
+        });
+        {% endif %}
+
+        $("#redirect-url-hidden-input").val(location.protocol+'//'+location.host+location.pathname);
+
+    </script>
     {% block scripts %}
     {% endblock %}
 

@@ -63,13 +63,13 @@
   (println "NEW COMMENT " post-id)
   (redirect (str "/selected?selected=" post-id "#bottom-comment") :see-other))
 
-(defn create-subscription [{:keys [id email descs]}]
+(defn create-subscription [{:keys [id email redirect-url selected]}]
+  (println "REDIRECT-URL" redirect-url)
   (jdbc/insert! db :subscriptions
                 {:post_id     (Integer. id)
                  :email       email
-                 :descendants (some? descs)
                  :date        (utils/now)})
-  (redirect (str "/selected?subscribed=true&selected=" id) :see-other))
+  (redirect (str redirect-url "?selected=" selected "&subscribed=true") :see-other))
 
 (defn delete-post [{:keys [id]}]
   (let [post (get-post id)
