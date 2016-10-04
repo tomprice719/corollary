@@ -26,7 +26,6 @@
                        :link-map (cheshire/generate-string (link-map (:project post) "selected"))
                        })))
 
-
 ;;TODO: remove redundant keys
 (defn create-child [{:keys [post selected] :as params}]
   (render-file "templates/compose_post.html"
@@ -55,7 +54,7 @@
                                        (cheshire/generate-string (get-title-map project selected))}))))
 
 (defn navigate-page [{:keys [selected post] :as params}]
-  (render-file "templates/tree.html"
+  (render-file "templates/navigate.html"
                (merge params
                       {:page     "tree"
                        :nodes    (tree/draw-data-list selected)

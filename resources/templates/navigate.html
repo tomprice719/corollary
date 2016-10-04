@@ -29,6 +29,13 @@
 
 <script language = "javascript">
 
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      processEscapes: true
+    }
+  });
+
   linkMap = {{link-map|safe}};
 
    $("#post-tree a").each(function() {
