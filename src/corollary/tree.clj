@@ -95,14 +95,10 @@
                            :post-id selected-post-id
                            :node-type "selected"
                            :prefix "Selected: "
-                           :title (queries/get-one-title selected-post-id)}}
+                           :title (queries/get-one-title selected-post-id)
+                           :root (queries/is-root selected-post-id)}}
                      (into (priority-map) (get-child-kvs selected-post-id '() 0))
                      15))
-
-(defn node-list [node-data]
-  (tree-seq (constantly true)
-            #(get-in node-data [% :children])
-            :top))
 
 (defn make-parent [node-data top-key]
   (let [{:keys [post-id]} (node-data top-key)
@@ -132,7 +128,7 @@
     (finish node-data top-key)))
 
 (def base-x 20)
-(def base-y 60)
+(def base-y 40)
 (def indent-width 20)
 (def text-height 25)
 
@@ -162,27 +158,21 @@
                          right-x low-y))))
 
 ;;use defmulti / defmethod
-(defn draw-data [{{:keys [indent text-row] :as pos} :pos :keys [post-id posts top title prefix selected node-type edge_type] :as node}]
-  (if (= node-type "multipost")
-    {:multipost true
-     :x (get-x indent)
-     :posts (map (fn [post i]
-                   (merge post {:y (get-y (+ text-row i))}))
-                 posts
-                 (range (count posts)))}
-    {:x (get-x indent)
-     :y (get-y text-row)
-     :arrow-points (if-not (= node-type "selected")
-                     (apply
-                       (partial format "%d,%d %d,%d %d,%d")
-                       (arrow-points pos node-type)))
-     :title (str prefix title)
-     :post-id post-id
-     :node-type node-type
-     :rect-y (- (get-y text-row) 15)
-     :rect-height 19
-     :rect-x (- (get-x indent) 3)
-     }))
+(defn draw-data [{{:keys [indent text-row] :as pos} :pos :keys [post-id title prefix node-type root] :as node}]
+  {:x            (get-x indent)
+   :y            (get-y text-row)
+   :arrow-points (if-not (= node-type "selected")
+                   (apply
+                     (partial format "%d,%d %d,%d %d,%d")
+                     (arrow-points pos node-type)))
+   :title        (str prefix title)
+   :post-id      post-id
+   :node-type    node-type
+   :rect-y       (- (get-y text-row) 15)
+   :rect-height  19
+   :rect-x       (- (get-x indent) 3)
+   :root         root
+   })
 
 ;;TODO: make changes to add-pos-data, draw-data
 ;;Also, use "key" instead of id in some variable names

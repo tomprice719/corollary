@@ -2,17 +2,10 @@
 
 {% block content %}
 <div id = "popover-container"></div>
-<svg id="nav-tree" width="1200" height="1200" id="post-tree"
+<svg width="1200" height="1200" id="post-tree"
      xmlns:xlink="http://www.w3.org/1999/xlink">
 
   {% for node in nodes %}
-  {% if node.multipost %}
-  {% for post in node.posts %}
-  <a xlink:href="/navigate?selected={{post.id}}" >
-    <text id="foo" x="{{node.x}}" y="{{post.y}}">Ancestor: {{post.title}}</text>
-  </a>
-  {% endfor %}
-  {% else %}
 
   {% ifequal node.node-type "selected" %}
   <rect x="{{node.rect-x}}" y="{{node.rect-y}}" width="1200" height="{{node.rect-height}}"
@@ -23,10 +16,10 @@
   <polyline points="{{node.arrow-points}}"
             style="fill:none;stroke:#AFCFFF;stroke-width:2" />
   {% endif %}
+
   <a xlink:href="/navigate?selected={{node.post-id}}" >
-    <text id="foo" x="{{node.x}}" y="{{node.y}}">{{node.title}}</text>
+    <text id="foo" x="{{node.x}}" y="{{node.y}}">{{node.title}} {% if node.root %}(project root){% endif %}</text>
   </a>
-  {% endif %}
 
   {% endfor %}
 </svg>
@@ -38,7 +31,7 @@
 
   linkMap = {{link-map|safe}};
 
-   $("#nav-tree a").each(function() {
+   $("#post-tree a").each(function() {
     var href = $(this).attr("xlink:href");
     if (href in linkMap) {
       $(this).popover({content: linkMap[href].content, trigger: "hover", html:true, container: "#popover-container", placement: "bottom"});

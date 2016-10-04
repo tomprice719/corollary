@@ -28,8 +28,14 @@
       two-weeks "1 week ago"
       (str (quot seconds-diff 604800) " weeks ago"))))
 
+(defn is-root [post-id]
+  (query db ["select parent_id is null as root from posts where id = ?"
+             (Integer. post-id)]
+         {:row-fn :root
+          :result-set-fn first}))
+
 (defn get-parents [id row-fn]
-  (query db ["select parent.title, parent.date, parent.id from posts as parent
+  (query db ["select parent.title, parent.date, parent.id, parent.parent_id is null as root from posts as parent
               where parent.id = (select child.parent_id from posts as child where child.id = ?)"
              (Integer. id)]
          {:row-fn row-fn}))
@@ -52,10 +58,11 @@
                              (Integer. post-id)]))))
 
 (defn get-one-title [post-id]
-  (first (query db
-                ["select title from posts where id = ?"
-                 (Integer. post-id)]
-                {:row-fn :title})))
+  (query db
+         ["select title from posts where id = ?"
+          (Integer. post-id)]
+         {:row-fn        :title
+          :result-set-fn first}))
 
 (defn pandoc [input]
   (:body (client/post (env :pandoc-url)

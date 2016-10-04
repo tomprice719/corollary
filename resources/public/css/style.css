@@ -27,10 +27,6 @@ body {
   padding-top: 4em;
 }
 
-#post-tree {
-  margin-top: 1em;
-}
-
 .active {
   font-weight: bold;
   font-size: 120%;
