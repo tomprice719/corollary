@@ -44,7 +44,7 @@
             <a href = "/selected?selected={{post.root_post_id}}">Current project: {{post.project_title}}</a>
           </li>
           <li><a data-toggle="modal" href="#subscribe">Subscribe to email notifications</a></li>
-          <li><a href="#">Log out</a></li>
+          <li><a href="#" id="logout">Log out</a></li>
         </ul>
       </div>
       <!--/.nav-collapse -->
@@ -129,6 +129,14 @@
         {% endif %}
 
         $("#redirect-url-hidden-input").val(location.protocol+'//'+location.host+location.pathname);
+
+        $("")
+
+  $("#logout").click(function() {
+  //clear cookies
+  document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
+  window.location = "/";
+  });
 
     </script>
     {% block scripts %}
