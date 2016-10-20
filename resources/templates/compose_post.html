@@ -32,13 +32,27 @@
   <input type="hidden" name="parent-id" id = "parent-hidden-input" value="{{parent-id}}"/>
 
   {% endif %}
+
+  <fieldset class="form-group">
+    <label>Hover Text</label>
+    <p>
+      An optional short summary of the post, displayed whenever someone hovers over a link to it. Only plain text and latex are allowed here, no markdown.
+    </p>
+    <textarea class="form-control" name="hover-text" rows="5">{{hover_text}}</textarea>
+  </fieldset>
+
   <fieldset class="form-group">
     <label>Content</label>
-    <textarea id="content-area" class="form-control" name="content" rows="15" placeholder = "Enter content">{{content}}</textarea>
+    <p>
       The markup language used is Pandoc-Markdown.
       <a href = "http://www.unexpected-vortices.com/sw/rippledoc/quick-markdown-example.html">
         See here for an example.
       </a>
+    </p>
+    <textarea id="content-area" class="form-control" name="content" rows="15" placeholder = "Enter content">{{content}}</textarea>
+  </fieldset>
+
+  <fieldset class="form-group">
     <div class="clearfix">
       <div class="pull-right">
         <button id="preview-all-button" type="button" class="btn btn-primary btn-md" data-toggle="modal">Preview All</button>
@@ -47,19 +61,9 @@
       </div>
     </div>
   </fieldset>
-  <fieldset class="form-group">
-    <label>Hover Text (optional)</label>
-    <textarea class="form-control" name="hover-text" rows="5" placeholder = "A short summary of the post, displayed whenever someone hovers over a link to it. Only plain text and latex are allowed here, no markdown.">{{hover_text}}</textarea>
-  </fieldset>
-
   <!-- Hidden input to include id of post, for editing an existing post -->
   <input type="hidden" name="id" value="{{id}}" />
-
-  <div class="pull-right">
-    <a href="/selected?selected={% if edit %}{{id}}{% else %}{{parent-id}}{% endif %}"
-       class="btn btn-danger btn-lg">Cancel</a>
-    <button type="submit" class="btn btn-primary btn-lg">Submit</button>
-  </div>
+  <button type="submit" class="btn btn-primary btn-lg pull-right">Submit</button>
 </form>
 
 <!-- Change parent modal-->
