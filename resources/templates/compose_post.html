@@ -55,7 +55,11 @@
   <!-- Hidden input to include id of post, for editing an existing post -->
   <input type="hidden" name="id" value="{{id}}" />
 
-  <button type="submit" class="btn btn-primary btn-lg pull-right">Submit</button>
+  <div class="pull-right">
+    <a href="/selected?selected={% if edit %}{{id}}{% else %}{{parent-id}}{% endif %}"
+       class="btn btn-danger btn-lg">Cancel</a>
+    <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+  </div>
 </form>
 
 <!-- Change parent modal-->
